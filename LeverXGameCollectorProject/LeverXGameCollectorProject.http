@@ -1,0 +1,6 @@
+@LeverXGameCollectorProject_HostAddress = http://localhost:5038
+
+GET {{LeverXGameCollectorProject_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
