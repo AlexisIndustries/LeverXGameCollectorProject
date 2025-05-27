@@ -1,4 +1,6 @@
-﻿using LeverXGameCollectorProject.Models;
+﻿using LeverXGameCollectorProject.Application.DTOs.Game;
+using LeverXGameCollectorProject.Application.Interfaces;
+using LeverXGameCollectorProject.Models;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -8,42 +10,27 @@ namespace LeverXGameCollectorProject.Controllers
     [Route("api/[controller]")]
     public class GamesController : ControllerBase
     {
-        private static List<Game> _games = new()
+        private readonly IGameService _gameService;
+
+        public GamesController(IGameService gameService)
         {
-            new Game
-            {
-                Id = 1,
-                Title = "The Witcher 3",
-                ReleaseDate = new DateTime(2015, 5, 19),
-                Description = "Action RPG game",
-                PlatformId = 1,
-                GenreId = 1
-            },
-            new Game
-            {
-                Id = 2,
-                Title = "Super Mario Odyssey",
-                ReleaseDate = new DateTime(2017, 10, 27),
-                Description = "Platformer game",
-                PlatformId = 2,
-                GenreId = 2
-            }
-        };
+            _gameService = gameService;
+        }
 
         /// <summary>  
         /// Retrieves all games.  
         /// </summary> 
         [HttpGet]
-        public IActionResult GetAll() => Ok(_games);
+        public async Task<IActionResult> GetAll() => Ok(await _gameService.GetAllGamesAsync());
 
         /// <summary>  
         /// Retrieves a specific game by ID.  
         /// </summary>  
         /// <param name="id">The game's unique ID.</param> 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var game = _games.FirstOrDefault(g => g.Id == id);
+            var game = await _gameService.GetGameByIdAsync(id);
             return game == null ? NotFound() : Ok(game);
         }
 
@@ -52,11 +39,10 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="game">The game data in JSON format.</param> 
         [HttpPost]
-        public IActionResult Create([FromBody] Game game)
+        public async Task<IActionResult> Create([FromBody] CreateGameDto game)
         {
-            game.Id = _games.Count + 1;
-            _games.Add(game);
-            return CreatedAtAction(nameof(GetById), new { id = game.Id }, game);
+            await _gameService.CreateGameAsync(game);
+            return Created();
         }
 
         /// <summary>  
@@ -65,16 +51,10 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The game's unique ID.</param>  
         /// <param name="updatedGame">Updated game data in JSON format.</param> 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Game updatedGame)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateGameDto updatedGame)
         {
-            var game = _games.FirstOrDefault(g => g.Id == id);
-            if (game == null) return NotFound();
+            await _gameService.UpdateGameAsync(id, updatedGame);
 
-            game.Title = updatedGame.Title;
-            game.Description = updatedGame.Description;
-            game.PlatformId = updatedGame.PlatformId;
-            game.ReleaseDate = updatedGame.ReleaseDate;
-            game.GenreId = updatedGame.GenreId;
             return NoContent();
         }
 
@@ -83,12 +63,12 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="id">The game's unique ID.</param> 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var game = _games.FirstOrDefault(g => g.Id == id);
+            var game = _gameService.GetGameByIdAsync(id);
             if (game == null) return NotFound();
 
-            _games.Remove(game);
+            await _gameService.DeleteGameAsync(id);
             return NoContent();
         }
     }

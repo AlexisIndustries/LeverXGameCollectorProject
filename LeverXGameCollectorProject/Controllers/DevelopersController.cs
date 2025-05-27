@@ -1,4 +1,6 @@
-﻿using LeverXGameCollectorProject.Models;
+﻿using LeverXGameCollectorProject.Application.DTOs.Developer;
+using LeverXGameCollectorProject.Application.Interfaces;
+using LeverXGameCollectorProject.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
@@ -7,40 +9,27 @@ namespace LeverXGameCollectorProject.Controllers
     [Route("api/[controller]")]
     public class DevelopersController : ControllerBase
     {
-        private static List<Developer> _developers = new() 
+        private readonly IDeveloperService _developerService;
+
+        public DevelopersController(IDeveloperService developerService)
         {
-            new Developer
-            {
-                Id = 1,
-                Name = "CD Projekt Red",
-                Country = "Poland",
-                Website = "https://cdprojektred.com",
-                Founded = new DateTime(1994, 5, 1)
-            },
-            new Developer
-            {
-                Id = 2,
-                Name = "Nintendo",
-                Country = "Japan",
-                Website = "https://nintendo.com",
-                Founded = new DateTime(1889, 9, 23)
-            }
-        };
+            _developerService = developerService;
+        }
 
         /// <summary>  
         /// Retrieves all developers.  
         /// </summary>  
         [HttpGet]
-        public IActionResult GetAll() => Ok(_developers);
+        public async Task<IActionResult> GetAll() => Ok(await _developerService.GetAllDevelopersAsync());
 
         /// <summary>  
         /// Retrieves a specific developer by ID.
         /// </summary>  
         /// <param name="id">The developer's unique ID.</param>  
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var developer = _developers.FirstOrDefault(d => d.Id == id);
+            var developer = await _developerService.GetDeveloperByIdAsync(id);
             return developer == null ? NotFound() : Ok(developer);
         }
 
@@ -49,11 +38,10 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="developer">The developer data in JSON format.</param>  
         [HttpPost]
-        public IActionResult Create([FromBody] Developer developer)
+        public async Task<IActionResult> Create([FromBody] CreateDeveloperDto developer)
         {
-            developer.Id = _developers.Count + 1;
-            _developers.Add(developer);
-            return CreatedAtAction(nameof(GetById), new { id = developer.Id }, developer);
+            await _developerService.CreateDeveloperAsync(developer);
+            return Created();
         }
 
         /// <summary>  
@@ -62,15 +50,10 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The developer's unique ID.</param>  
         /// <param name="updatedDeveloper">Updated developer data in JSON format.</param>  
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Developer updatedDeveloper)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateDeveloperDto updatedDeveloper)
         {
-            var developer = _developers.FirstOrDefault(d => d.Id == id);
-            if (developer == null) return NotFound();
+            await _developerService.UpdateDeveloperAsync(id, updatedDeveloper);
 
-            developer.Founded = updatedDeveloper.Founded;
-            developer.Name = updatedDeveloper.Name;
-            developer.Country = updatedDeveloper.Country;
-            developer.Website = updatedDeveloper.Website;
             return NoContent();
         }
 
@@ -79,12 +62,12 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="id">The developer's unique ID.</param>  
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var developer = _developers.FirstOrDefault(d => d.Id == id);
+            var developer = await _developerService.GetDeveloperByIdAsync(id);
             if (developer == null) return NotFound();
 
-            _developers.Remove(developer);
+            await _developerService.DeleteDeveloperAsync(id);
             return NoContent();
         }
     }

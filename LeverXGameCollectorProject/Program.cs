@@ -1,5 +1,9 @@
+using LeverXGameCollectorProject.Infrastructure;
+using LeverXGameCollectorProject.Application;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +20,21 @@ builder.Services.AddSwaggerGen(c =>
     c.IncludeXmlComments(xmlPath);
 });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("fixed", opt =>
+    {
+        opt.PermitLimit = 4;
+        opt.Window = TimeSpan.FromSeconds(10);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 2;
+    });
+});
+
+builder.Services
+    .AddInfrastructure()
+    .AddApplication();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -29,6 +48,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers().RequireRateLimiting("fixed");
 
 app.Run();
