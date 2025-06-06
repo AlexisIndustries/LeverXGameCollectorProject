@@ -40,7 +40,7 @@ namespace LeverXGameCollectorProject.Application.Services
             await _genreRepository.AddAsync(genre);
         }
 
-        public async Task UpdateGenreAsync(int id, UpdateGenreResponseModel GenreDto)
+        public async Task UpdateGenreAsync(int id, UpdateGenreRequestModel GenreDto)
         {
             var genre = await _genreRepository.GetByIdAsync(id);
             _mapper.Map(GenreDto, genre);

@@ -1,6 +1,8 @@
 ﻿using LeverXGameCollectorProject.Application.DTOs.Game;
 using LeverXGameCollectorProject.Application.DTOs.Genre;
-using LeverXGameCollectorProject.Application.Interfaces;
+using LeverXGameCollectorProject.Application.Features.Genre.Commands;
+using LeverXGameCollectorProject.Application.Features.Genre.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
@@ -9,30 +11,35 @@ namespace LeverXGameCollectorProject.Controllers
     [Route("api/[controller]")]
     public class GenresController : ControllerBase
     {
+        //private readonly IGenreService _genreService;
+        private readonly IMediator _mediator;
 
-        private readonly IGenreService _genreService;
-
-        public GenresController(IGenreService genreService)
+        public GenresController(IMediator mediator)
         {
-            _genreService = genreService;
+            _mediator = mediator;
         }
+
+        //  public GenresController(IGenreService genreService)
+        //  {
+        //      _genreService = genreService;
+        //  }
 
         /// <summary>  
         /// Retrieves all genres.  
         /// </summary>  
         [HttpGet]
         [ProducesResponseType<IEnumerable<GenreResponseModel>>(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll() => Ok(await _genreService.GetAllGenresAsync());
+        public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllGenresQuery()));
 
         /// <summary>  
         /// Retrieves a specific genre by ID.  
         /// </summary>  
         /// <param name="id">The genre's unique ID.</param>  
         [HttpGet("{id}")]
-        [ProducesResponseType<GameResponseModel>(StatusCodes.Status200OK)]
+        [ProducesResponseType<GenreResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {
-            var genre = await _genreService.GetGenreByIdAsync(id);
+            var genre = await _mediator.Send(new GetGenreByIdQuery(id));
             return genre == null ? NotFound() : Ok(genre);
         }
 
@@ -41,9 +48,9 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="genre">The genre data in JSON format.</param>  
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateGenreRequestModel genre)
+        public async Task<IActionResult> Create([FromBody] CreateGenreCommand genre)
         {
-            await _genreService.CreateGenreAsync(genre);
+            await _mediator.Send(genre);
             return Created();
         }
 
@@ -53,10 +60,10 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The genre's unique ID.</param>  
         /// <param name="updatedGenre">Updated genre data in JSON format.</param>  
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateGenreResponseModel updatedGenre)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateGenreCommand updatedGenre)
         {
-            await _genreService.UpdateGenreAsync(id, updatedGenre);
-
+            updatedGenre.Id = id;
+            await _mediator.Send(updatedGenre);
             return NoContent();
         }
 
@@ -67,10 +74,10 @@ namespace LeverXGameCollectorProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var genre = _genreService.GetGenreByIdAsync(id);
+            var genre = _mediator.Send(new GetGenreByIdQuery(id));
             if (genre == null) return NotFound();
 
-            await _genreService.DeleteGenreAsync(id);
+            await _mediator.Send(new DeleteGenreCommand(id));
             return NoContent();
         }
     }

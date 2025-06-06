@@ -1,5 +1,9 @@
 ﻿using LeverXGameCollectorProject.Application.DTOs.Game;
+using LeverXGameCollectorProject.Application.Features.Developer.Queries;
+using LeverXGameCollectorProject.Application.Features.Game.Commands;
+using LeverXGameCollectorProject.Application.Features.Game.Queries;
 using LeverXGameCollectorProject.Application.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
@@ -8,19 +12,20 @@ namespace LeverXGameCollectorProject.Controllers
     [Route("api/[controller]")]
     public class GamesController : ControllerBase
     {
-        private readonly IGameService _gameService;
+        //private readonly IGameService _gameService;
+        private readonly IMediator _mediator;
 
-        public GamesController(IGameService gameService)
-        {
-            _gameService = gameService;
-        }
+        // public GamesController(IGameService gameService)
+        // {
+        //     _gameService = gameService;
+        // }
 
         /// <summary>  
         /// Retrieves all games.  
         /// </summary> 
         [HttpGet]
         [ProducesResponseType<IEnumerable<GameResponseModel>>(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll() => Ok(await _gameService.GetAllGamesAsync());
+        public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllGamesQuery()));
 
         /// <summary>  
         /// Retrieves a specific game by ID.  
@@ -30,7 +35,7 @@ namespace LeverXGameCollectorProject.Controllers
         [ProducesResponseType<GameResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {
-            var game = await _gameService.GetGameByIdAsync(id);
+            var game = await _mediator.Send(new GetGameByIdQuery(id));
             return game == null ? NotFound() : Ok(game);
         }
 
@@ -39,9 +44,9 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="game">The game data in JSON format.</param> 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateGameRequestModel game)
+        public async Task<IActionResult> Create([FromBody] CreateGameCommand game)
         {
-            await _gameService.CreateGameAsync(game);
+            await _mediator.Send(game);
             return Created();
         }
 
@@ -51,10 +56,10 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The game's unique ID.</param>  
         /// <param name="updatedGame">Updated game data in JSON format.</param> 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateGameRequestModel updatedGame)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateGameCommand updatedGame)
         {
-            await _gameService.UpdateGameAsync(id, updatedGame);
-
+            updatedGame.Id = id;
+            await _mediator.Send(updatedGame);
             return NoContent();
         }
 
@@ -65,10 +70,10 @@ namespace LeverXGameCollectorProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var game = _gameService.GetGameByIdAsync(id);
+            var game = _mediator.Send(new GetGameByIdQuery(id));
             if (game == null) return NotFound();
 
-            await _gameService.DeleteGameAsync(id);
+            await _mediator.Send(new DeleteGameCommand(id));
             return NoContent();
         }
     }

@@ -1,6 +1,6 @@
 ﻿namespace LeverXGameCollectorProject.Application.DTOs.Genre
 {
-    public class UpdateGenreResponseModel
+    public class UpdateGenreRequestModel
     {
         public string? Name { get; set; }
         public string? Description { get; set; }

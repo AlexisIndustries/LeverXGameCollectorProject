@@ -1,5 +1,7 @@
 ﻿using LeverXGameCollectorProject.Application.DTOs.Platform;
-using LeverXGameCollectorProject.Application.Interfaces;
+using LeverXGameCollectorProject.Application.Features.Platform.Commands;
+using LeverXGameCollectorProject.Application.Features.Platform.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
@@ -8,19 +10,25 @@ namespace LeverXGameCollectorProject.Controllers
     [Route("api/[controller]")]
     public class PlatformsController : ControllerBase
     {
-        private readonly IPlatformService _plaformService;
+        //private readonly IPlatformService _plaformService;
+        private readonly IMediator _mediator;
 
-        public PlatformsController(IPlatformService plaformService)
+        public PlatformsController(IMediator mediator)
         {
-            _plaformService = plaformService;
+            _mediator = mediator;
         }
+
+        // public PlatformsController(IPlatformService plaformService)
+        // {
+        //     _plaformService = plaformService;
+        // }
 
         /// <summary>  
         /// Retrieves all platforms.  
         /// </summary>  
         [HttpGet]
         [ProducesResponseType<IEnumerable<PlatformResponseModel>>(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll() => Ok(await _plaformService.GetAllPlatformsAsync());
+        public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllPlatformsQuery()));
 
         /// <summary>  
         /// Retrieves a specific platform by ID.  
@@ -30,7 +38,7 @@ namespace LeverXGameCollectorProject.Controllers
         [ProducesResponseType<PlatformResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {
-            var platform = await _plaformService.GetPlatformByIdAsync(id);
+            var platform = await _mediator.Send(new GetPlatformByIdQuery(id));
             return platform == null ? NotFound() : Ok(platform);
         }
 
@@ -39,9 +47,9 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="platform">The platform data in JSON format.</param>  
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreatePlatformRequestModel platform)
+        public async Task<IActionResult> Create([FromBody] CreatePlatformCommand platform)
         {
-            await _plaformService.CreatePlatformAsync(platform);
+            await _mediator.Send(platform);
             return Created();
         }
 
@@ -51,10 +59,10 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The platform's unique ID.</param>  
         /// <param name="updatedPlatform">Updated platform data in JSON format.</param>  
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdatePlatformRequestModel updatedPlatform)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdatePlatformCommand updatedPlatform)
         {
-            await _plaformService.UpdatePlatformAsync(id, updatedPlatform);
-
+            updatedPlatform.Id = id;
+            await _mediator.Send(updatedPlatform);
             return NoContent();
         }
 
@@ -65,10 +73,10 @@ namespace LeverXGameCollectorProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var platform = _plaformService.GetPlatformByIdAsync(id);
+            var platform = _mediator.Send(new GetPlatformByIdQuery(id));
             if (platform == null) return NotFound();
 
-            await _plaformService.DeletePlatformAsync(id);
+            await _mediator.Send(new DeletePlatformCommand(id));
             return NoContent();
         }
     }

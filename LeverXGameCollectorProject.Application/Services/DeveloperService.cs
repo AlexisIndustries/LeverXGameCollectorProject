@@ -1,14 +1,8 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs;
 using LeverXGameCollectorProject.Application.DTOs.Developer;
 using LeverXGameCollectorProject.Application.Interfaces;
 using LeverXGameCollectorProject.Domain.Interfaces;
 using LeverXGameCollectorProject.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LeverXGameCollectorProject.Application.Services
 {

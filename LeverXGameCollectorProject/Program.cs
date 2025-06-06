@@ -1,5 +1,7 @@
 using FluentValidation;
 using LeverXGameCollectorProject.Application;
+using LeverXGameCollectorProject.Application.Features.Developer.Commands;
+using LeverXGameCollectorProject.Application.Features.Developer.Validators;
 using LeverXGameCollectorProject.Infrastructure;
 using LeverXGameCollectorProject.Infrastructure.Persistence;
 using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF;
@@ -19,6 +21,9 @@ builder.Services.AddSingleton(new DatabaseSettings
 });
 
 var repositoryType = builder.Configuration.GetValue<string>("RepositorySettings:RepositoryType");
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<CreateDeveloperCommand>())
+    .AddValidatorsFromAssembly(typeof(CreateDeveloperCommandValidator).Assembly);
 
 switch (repositoryType?.ToUpperInvariant())
 {
@@ -44,7 +49,6 @@ builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
 
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -65,9 +69,6 @@ builder.Services.AddRateLimiter(options =>
         opt.QueueLimit = 2;
     });
 });
-
-//builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateDeveloperCommand).Assembly))
-//    .AddValidatorsFromAssembly(typeof(CreateDeveloperCommandValidator).Assembly);
 
 builder.Services
     .AddApplication();

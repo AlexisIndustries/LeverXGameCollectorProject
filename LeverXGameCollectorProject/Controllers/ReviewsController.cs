@@ -1,5 +1,7 @@
 ﻿using LeverXGameCollectorProject.Application.DTOs.Review;
-using LeverXGameCollectorProject.Application.Interfaces;
+using LeverXGameCollectorProject.Application.Features.Review.Commands;
+using LeverXGameCollectorProject.Application.Features.Review.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
@@ -8,19 +10,25 @@ namespace LeverXGameCollectorProject.Controllers
     [Route("api/[controller]")]
     public class ReviewsController : ControllerBase
     {
-        private readonly IReviewService _reviewService;
+        //private readonly IReviewService _reviewService;
+        private IMediator _mediator;
 
-        public ReviewsController(IReviewService reviewService)
+        public ReviewsController(IMediator mediator)
         {
-            _reviewService = reviewService;
+            _mediator = mediator;
         }
+
+        // public ReviewsController(IReviewService reviewService)
+        // {
+        //     _reviewService = reviewService;
+        // }
 
         /// <summary>  
         /// Retrieves all reviews.  
         /// </summary>  
         [HttpGet]
         [ProducesResponseType<IEnumerable<ReviewResponseModel>>(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll() => Ok(await _reviewService.GetAllReviewsAsync());
+        public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllReviewQuery()));
 
         /// <summary>  
         /// Retrieves a specific review by ID. 
@@ -30,7 +38,7 @@ namespace LeverXGameCollectorProject.Controllers
         [ProducesResponseType<ReviewResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetByGameId(int gameId)
         {
-            var reviews = await _reviewService.GetReviewsByGameAsync(gameId);
+            var reviews = await _mediator.Send(new GetReviewByGameIdQuery(gameId));
             return Ok(reviews);
         }
 
@@ -41,7 +49,7 @@ namespace LeverXGameCollectorProject.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var reviews = await _reviewService.GetReviewByIdAsync(id);
+            var reviews = await _mediator.Send(new GetReviewByIdQuery(id));
             return Ok(reviews);
         }
 
@@ -50,12 +58,12 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="review">The review data in JSON format.</param>  
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateReviewRequestModel review)
+        public async Task<IActionResult> Create([FromBody] CreateReviewCommand review)
         { 
             if (review.Rating < 1 || review.Rating > 5)
                 return BadRequest("Rating must be between 1 and 5.");
 
-            await _reviewService.CreateReviewAsync(review);
+            await _mediator.Send(review);
             return Created();
         }
 
@@ -65,9 +73,10 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The review's unique ID.</param>  
         /// <param name="updatedReview">Updated review data in JSON format.</param>  
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateReviewRequestModel updatedReview)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateReviewCommand updatedReview)
         {
-            await _reviewService.UpdateReviewAsync(id, updatedReview);
+            updatedReview.Id = id;
+            await _mediator.Send(updatedReview);
 
             return NoContent();
         }
@@ -79,10 +88,10 @@ namespace LeverXGameCollectorProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var review = _reviewService.GetReviewByIdAsync(id);
+            var review = _mediator.Send(new GetReviewByIdQuery(id));
             if (review == null) return NotFound();
 
-            await _reviewService.DeleteReviewAsync(id);
+            await _mediator.Send(new DeleteReviewCommand(id));
             return NoContent();
         }
     }

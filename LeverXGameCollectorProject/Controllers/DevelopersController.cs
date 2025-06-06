@@ -1,5 +1,8 @@
 ﻿using LeverXGameCollectorProject.Application.DTOs.Developer;
+using LeverXGameCollectorProject.Application.Features.Developer.Commands;
+using LeverXGameCollectorProject.Application.Features.Developer.Queries;
 using LeverXGameCollectorProject.Application.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
@@ -8,19 +11,25 @@ namespace LeverXGameCollectorProject.Controllers
     [Route("api/[controller]")]
     public class DevelopersController : ControllerBase
     {
-        private readonly IDeveloperService _developerService;
+        //private readonly IDeveloperService _developerService;
+        private readonly IMediator _mediator;
 
-        public DevelopersController(IDeveloperService developerService)
+        public DevelopersController(IMediator mediator)
         {
-            _developerService = developerService;
+            _mediator = mediator;
         }
+
+        // public DevelopersController(IDeveloperService developerService)
+        // {
+        //     _developerService = developerService;
+        // }
 
         /// <summary>  
         /// Retrieves all developers.  
         /// </summary>  
         [HttpGet]
         [ProducesResponseType<IEnumerable<DeveloperResponseModel>>(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll() => Ok(await _developerService.GetAllDevelopersAsync());
+        public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllDevelopersQuery()));
 
         /// <summary>  
         /// Retrieves a specific developer by ID.
@@ -30,7 +39,7 @@ namespace LeverXGameCollectorProject.Controllers
         [ProducesResponseType<DeveloperResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {
-            var developer = await _developerService.GetDeveloperByIdAsync(id);
+            var developer = await _mediator.Send(new GetDeveloperByIdQuery(id));
             return developer == null ? NotFound() : Ok(developer);
         }
 
@@ -39,9 +48,9 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="developer">The developer data in JSON format.</param>  
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateDeveloperRequestModel developer)
+        public async Task<IActionResult> Create([FromBody] CreateDeveloperCommand developer)
         {
-            await _developerService.CreateDeveloperAsync(developer);
+            await _mediator.Send(developer);
             return Created();
         }
 
@@ -51,10 +60,10 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The developer's unique ID.</param>  
         /// <param name="updatedDeveloper">Updated developer data in JSON format.</param>  
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateDeveloperRequestModel updatedDeveloper)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateDeveloperCommand updatedDeveloper)
         {
-            await _developerService.UpdateDeveloperAsync(id, updatedDeveloper);
-
+            updatedDeveloper.Id = id;
+            await _mediator.Send(updatedDeveloper);
             return NoContent();
         }
 
@@ -65,10 +74,10 @@ namespace LeverXGameCollectorProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var developer = await _developerService.GetDeveloperByIdAsync(id);
+            var developer = await _mediator.Send(new GetDeveloperByIdQuery(id));
             if (developer == null) return NotFound();
 
-            await _developerService.DeleteDeveloperAsync(id);
+            await _mediator.Send(new DeleteDeveloperCommand(id));
             return NoContent();
         }
     }
