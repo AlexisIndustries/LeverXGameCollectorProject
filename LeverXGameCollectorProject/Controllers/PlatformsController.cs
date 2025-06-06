@@ -1,6 +1,5 @@
 ﻿using LeverXGameCollectorProject.Application.DTOs.Platform;
 using LeverXGameCollectorProject.Application.Interfaces;
-using LeverXGameCollectorProject.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
@@ -20,6 +19,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// Retrieves all platforms.  
         /// </summary>  
         [HttpGet]
+        [ProducesResponseType<IEnumerable<PlatformResponseModel>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll() => Ok(await _plaformService.GetAllPlatformsAsync());
 
         /// <summary>  
@@ -27,6 +27,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="id">The platform's unique ID.</param>  
         [HttpGet("{id}")]
+        [ProducesResponseType<PlatformResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {
             var platform = await _plaformService.GetPlatformByIdAsync(id);
@@ -38,7 +39,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="platform">The platform data in JSON format.</param>  
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreatePlatformDto platform)
+        public async Task<IActionResult> Create([FromBody] CreatePlatformRequestModel platform)
         {
             await _plaformService.CreatePlatformAsync(platform);
             return Created();
@@ -50,7 +51,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The platform's unique ID.</param>  
         /// <param name="updatedPlatform">Updated platform data in JSON format.</param>  
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdatePlatformDto updatedPlatform)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdatePlatformRequestModel updatedPlatform)
         {
             await _plaformService.UpdatePlatformAsync(id, updatedPlatform);
 

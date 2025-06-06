@@ -5,14 +5,38 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
+	
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="MediatR" Version="12.5.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.1.2" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="8.1.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LeverXGameCollectorProject.Domain\LeverXGameCollectorProject.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\Developer\Commands\" />
+    <Folder Include="Features\Developer\Queries\" />
+    <Folder Include="Features\Developer\Validators\" />
+    <Folder Include="Features\Game\Commands\" />
+    <Folder Include="Features\Game\Queries\" />
+    <Folder Include="Features\Game\Validators\" />
+    <Folder Include="Features\Genre\Commands\" />
+    <Folder Include="Features\Genre\Queries\" />
+    <Folder Include="Features\Genre\Validators\" />
+    <Folder Include="Features\Platform\Commands\" />
+    <Folder Include="Features\Platform\Queries\" />
+    <Folder Include="Features\Platform\Validators\" />
+    <Folder Include="Features\Review\Commands\" />
+    <Folder Include="Features\Review\Queries\" />
+    <Folder Include="Features\Review\Validators\" />
   </ItemGroup>
 
 </Project>

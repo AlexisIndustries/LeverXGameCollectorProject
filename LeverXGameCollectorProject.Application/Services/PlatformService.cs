@@ -22,25 +22,25 @@ namespace LeverXGameCollectorProject.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<PlatformDto>> GetAllPlatformsAsync()
+        public async Task<IEnumerable<PlatformResponseModel>> GetAllPlatformsAsync()
         {
             var platforms = await _platformRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<PlatformDto>>(platforms);
+            return _mapper.Map<IEnumerable<PlatformResponseModel>>(platforms);
         }
 
-        public async Task<PlatformDto> GetPlatformByIdAsync(int id)
+        public async Task<PlatformResponseModel> GetPlatformByIdAsync(int id)
         {
             var platform = await _platformRepository.GetByIdAsync(id);
-            return _mapper.Map<PlatformDto>(platform);
+            return _mapper.Map<PlatformResponseModel>(platform);
         }
 
-        public async Task CreatePlatformAsync(CreatePlatformDto platformDto)
+        public async Task CreatePlatformAsync(CreatePlatformRequestModel platformDto)
         {
             var platform = _mapper.Map<Platform>(platformDto);
             await _platformRepository.AddAsync(platform);
         }
 
-        public async Task UpdatePlatformAsync(int id, UpdatePlatformDto platformDto)
+        public async Task UpdatePlatformAsync(int id, UpdatePlatformRequestModel platformDto)
         {
             var platform = await _platformRepository.GetByIdAsync(id);
             _mapper.Map(platformDto, platform);

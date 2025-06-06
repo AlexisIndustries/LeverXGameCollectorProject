@@ -1,6 +1,6 @@
-﻿using LeverXGameCollectorProject.Application.DTOs.Genre;
+﻿using LeverXGameCollectorProject.Application.DTOs.Game;
+using LeverXGameCollectorProject.Application.DTOs.Genre;
 using LeverXGameCollectorProject.Application.Interfaces;
-using LeverXGameCollectorProject.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
@@ -21,6 +21,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// Retrieves all genres.  
         /// </summary>  
         [HttpGet]
+        [ProducesResponseType<IEnumerable<GenreResponseModel>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll() => Ok(await _genreService.GetAllGenresAsync());
 
         /// <summary>  
@@ -28,6 +29,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="id">The genre's unique ID.</param>  
         [HttpGet("{id}")]
+        [ProducesResponseType<GameResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {
             var genre = await _genreService.GetGenreByIdAsync(id);
@@ -39,7 +41,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="genre">The genre data in JSON format.</param>  
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateGenreDto genre)
+        public async Task<IActionResult> Create([FromBody] CreateGenreRequestModel genre)
         {
             await _genreService.CreateGenreAsync(genre);
             return Created();
@@ -51,7 +53,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The genre's unique ID.</param>  
         /// <param name="updatedGenre">Updated genre data in JSON format.</param>  
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateGenreDto updatedGenre)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateGenreResponseModel updatedGenre)
         {
             await _genreService.UpdateGenreAsync(id, updatedGenre);
 

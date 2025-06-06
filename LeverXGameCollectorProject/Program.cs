@@ -1,15 +1,49 @@
-using LeverXGameCollectorProject.Infrastructure;
+using FluentValidation;
 using LeverXGameCollectorProject.Application;
+using LeverXGameCollectorProject.Infrastructure;
+using LeverXGameCollectorProject.Infrastructure.Persistence;
+using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using System.Reflection;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton(new DatabaseSettings
+{
+    ConnectionString = builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString")
+});
+
+var repositoryType = builder.Configuration.GetValue<string>("RepositorySettings:RepositoryType");
+
+switch (repositoryType?.ToUpperInvariant())
+{
+    case "DAPPER":
+        builder.Services.AddInfrastructure("DAPPER");
+        break;
+
+    case "EFCORE":
+        builder.Services.AddInfrastructure("EFCORE");
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString"),
+            x => x.MigrationsAssembly("LeverXGameCollectorProject.Migrations")));
+        break;
+    case "INMEMORY":
+        builder.Services.AddInfrastructure();
+        break;
+    default:
+        var errorMessage = $"Invalid repository type: {repositoryType}. Valid options: Dapper, EFCore";
+        throw new InvalidOperationException(errorMessage);
+}
+
 builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -18,6 +52,7 @@ builder.Services.AddSwaggerGen(c =>
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     c.IncludeXmlComments(xmlPath);
+    c.EnableAnnotations();
 });
 
 builder.Services.AddRateLimiter(options =>
@@ -31,11 +66,38 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
+//builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateDeveloperCommand).Assembly))
+//    .AddValidatorsFromAssembly(typeof(CreateDeveloperCommandValidator).Assembly);
+
 builder.Services
-    .AddInfrastructure()
     .AddApplication();
 
 var app = builder.Build();
+
+app.UseExceptionHandler(appError =>
+{
+    appError.Run(async context =>
+    {
+        var exceptionHandler = context.Features.Get<IExceptionHandlerFeature>();
+        var exception = exceptionHandler?.Error;
+
+        var (statusCode, message) = exception switch
+        {
+            PostgresException { SqlState: "23503" } =>
+                (StatusCodes.Status400BadRequest, "The entry cannot be deleted, modified or inserted because it is in use, does not exist or constains invalid data."),
+            DbUpdateException ex when (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23503") => 
+                (StatusCodes.Status400BadRequest, "The entry cannot be deleted, modified or inserted because it is in use, does not exist or constains invalid data."),
+            _ => (StatusCodes.Status500InternalServerError, "An internal server error occurred")
+        };
+
+        context.Response.StatusCode = statusCode;
+
+        await context.Response.WriteAsJsonAsync(new { error = message });
+    });
+});
+
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation($"Application started with {repositoryType} repository", repositoryType);
 
 if (app.Environment.IsDevelopment())
 {

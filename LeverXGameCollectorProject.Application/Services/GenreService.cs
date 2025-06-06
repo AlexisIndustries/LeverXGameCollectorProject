@@ -22,25 +22,25 @@ namespace LeverXGameCollectorProject.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<GenreDto>> GetAllGenresAsync()
+        public async Task<IEnumerable<GenreResponseModel>> GetAllGenresAsync()
         {
             var genres = await _genreRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<GenreDto>>(genres);
+            return _mapper.Map<IEnumerable<GenreResponseModel>>(genres);
         }
 
-        public async Task<GenreDto> GetGenreByIdAsync(int id)
+        public async Task<GenreResponseModel> GetGenreByIdAsync(int id)
         {
             var genre = await _genreRepository.GetByIdAsync(id);
-            return _mapper.Map<GenreDto>(genre);
+            return _mapper.Map<GenreResponseModel>(genre);
         }
 
-        public async Task CreateGenreAsync(CreateGenreDto GenreDto)
+        public async Task CreateGenreAsync(CreateGenreRequestModel GenreDto)
         {
             var genre = _mapper.Map<Genre>(GenreDto);
             await _genreRepository.AddAsync(genre);
         }
 
-        public async Task UpdateGenreAsync(int id, UpdateGenreDto GenreDto)
+        public async Task UpdateGenreAsync(int id, UpdateGenreResponseModel GenreDto)
         {
             var genre = await _genreRepository.GetByIdAsync(id);
             _mapper.Map(GenreDto, genre);

@@ -9,10 +9,10 @@ namespace LeverXGameCollectorProject.Application.Interfaces
 {
     public interface IGameService
     {
-        Task<IEnumerable<GameDto>> GetAllGamesAsync();
-        Task<GameDto> GetGameByIdAsync(int id);
-        Task CreateGameAsync(CreateGameDto gameDto);
-        Task UpdateGameAsync(int id, UpdateGameDto gameDto);
+        Task<IEnumerable<GameResponseModel>> GetAllGamesAsync();
+        Task<GameResponseModel> GetGameByIdAsync(int id);
+        Task CreateGameAsync(CreateGameRequestModel gameDto);
+        Task UpdateGameAsync(int id, UpdateGameRequestModel gameDto);
         Task DeleteGameAsync(int id);
     }
 }

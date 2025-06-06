@@ -17,25 +17,25 @@ namespace LeverXGameCollectorProject.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<GameDto>> GetAllGamesAsync()
+        public async Task<IEnumerable<GameResponseModel>> GetAllGamesAsync()
         {
             var games = await _gameRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<GameDto>>(games);
+            return _mapper.Map<IEnumerable<GameResponseModel>>(games);
         }
 
-        public async Task<GameDto> GetGameByIdAsync(int id)
+        public async Task<GameResponseModel> GetGameByIdAsync(int id)
         {
             var game = await _gameRepository.GetByIdAsync(id);
-            return _mapper.Map<GameDto>(game);
+            return _mapper.Map<GameResponseModel>(game);
         }
 
-        public async Task CreateGameAsync(CreateGameDto gameDto)
+        public async Task CreateGameAsync(CreateGameRequestModel gameDto)
         {
             var game = _mapper.Map<Game>(gameDto);
             await _gameRepository.AddAsync(game);
         }
 
-        public async Task UpdateGameAsync(int id, UpdateGameDto gameDto)
+        public async Task UpdateGameAsync(int id, UpdateGameRequestModel gameDto)
         {
             var game = await _gameRepository.GetByIdAsync(id);
             _mapper.Map(gameDto, game);

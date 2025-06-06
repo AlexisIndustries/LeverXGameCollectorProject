@@ -23,13 +23,13 @@ namespace LeverXGameCollectorProject.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ReviewDto>> GetReviewsByGameAsync(int gameId)
+        public async Task<IEnumerable<ReviewResponseModel>> GetReviewsByGameAsync(int gameId)
         {
             var reviews = await _reviewRepository.GetByGameAsync(gameId);
-            return _mapper.Map<IEnumerable<ReviewDto>>(reviews);
+            return _mapper.Map<IEnumerable<ReviewResponseModel>>(reviews);
         }
 
-        public async Task CreateReviewAsync(CreateReviewDto reviewDto)
+        public async Task CreateReviewAsync(CreateReviewRequestModel reviewDto)
         {
             var review = _mapper.Map<Review>(reviewDto);
             await _reviewRepository.AddAsync(review);
@@ -40,20 +40,20 @@ namespace LeverXGameCollectorProject.Application.Services
             await _reviewRepository.DeleteAsync(id);
         }
 
-        public async Task<IEnumerable<ReviewDto>> GetAllReviewsAsync()
+        public async Task<IEnumerable<ReviewResponseModel>> GetAllReviewsAsync()
         {
             var reviews = await _reviewRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<ReviewDto>>(reviews);
+            return _mapper.Map<IEnumerable<ReviewResponseModel>>(reviews);
         
         }
 
-        public async Task<ReviewDto> GetReviewByIdAsync(int id)
+        public async Task<ReviewResponseModel> GetReviewByIdAsync(int id)
         {
             var review = await _reviewRepository.GetByIdAsync(id);
-            return _mapper.Map<ReviewDto>(review);
+            return _mapper.Map<ReviewResponseModel>(review);
         }
 
-        public async Task UpdateReviewAsync(int id, UpdateReviewDto reviewDto)
+        public async Task UpdateReviewAsync(int id, UpdateReviewRequestModel reviewDto)
         {
             var review = await _reviewRepository.GetByIdAsync(id);
             _mapper.Map(reviewDto, review);

@@ -1,8 +1,6 @@
 ﻿using LeverXGameCollectorProject.Application.DTOs.Game;
 using LeverXGameCollectorProject.Application.Interfaces;
-using LeverXGameCollectorProject.Models;
 using Microsoft.AspNetCore.Mvc;
-
 
 namespace LeverXGameCollectorProject.Controllers
 {
@@ -21,6 +19,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// Retrieves all games.  
         /// </summary> 
         [HttpGet]
+        [ProducesResponseType<IEnumerable<GameResponseModel>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll() => Ok(await _gameService.GetAllGamesAsync());
 
         /// <summary>  
@@ -28,6 +27,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="id">The game's unique ID.</param> 
         [HttpGet("{id}")]
+        [ProducesResponseType<GameResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {
             var game = await _gameService.GetGameByIdAsync(id);
@@ -39,7 +39,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="game">The game data in JSON format.</param> 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateGameDto game)
+        public async Task<IActionResult> Create([FromBody] CreateGameRequestModel game)
         {
             await _gameService.CreateGameAsync(game);
             return Created();
@@ -51,7 +51,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The game's unique ID.</param>  
         /// <param name="updatedGame">Updated game data in JSON format.</param> 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateGameDto updatedGame)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateGameRequestModel updatedGame)
         {
             await _gameService.UpdateGameAsync(id, updatedGame);
 

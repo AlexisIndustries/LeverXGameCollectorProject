@@ -1,6 +1,5 @@
 ﻿using LeverXGameCollectorProject.Application.DTOs.Developer;
 using LeverXGameCollectorProject.Application.Interfaces;
-using LeverXGameCollectorProject.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
@@ -20,6 +19,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// Retrieves all developers.  
         /// </summary>  
         [HttpGet]
+        [ProducesResponseType<IEnumerable<DeveloperResponseModel>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll() => Ok(await _developerService.GetAllDevelopersAsync());
 
         /// <summary>  
@@ -27,6 +27,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="id">The developer's unique ID.</param>  
         [HttpGet("{id}")]
+        [ProducesResponseType<DeveloperResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {
             var developer = await _developerService.GetDeveloperByIdAsync(id);
@@ -38,7 +39,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="developer">The developer data in JSON format.</param>  
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateDeveloperDto developer)
+        public async Task<IActionResult> Create([FromBody] CreateDeveloperRequestModel developer)
         {
             await _developerService.CreateDeveloperAsync(developer);
             return Created();
@@ -50,7 +51,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The developer's unique ID.</param>  
         /// <param name="updatedDeveloper">Updated developer data in JSON format.</param>  
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateDeveloperDto updatedDeveloper)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateDeveloperRequestModel updatedDeveloper)
         {
             await _developerService.UpdateDeveloperAsync(id, updatedDeveloper);
 

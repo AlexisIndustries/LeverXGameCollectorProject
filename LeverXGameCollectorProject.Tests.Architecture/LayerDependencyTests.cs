@@ -1,14 +1,15 @@
-﻿using NetArchTest.Rules;
-using static System.Net.Mime.MediaTypeNames;
+﻿using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.InMemory;
+using NetArchTest.Rules;
+//using static System.Net.Mime.MediaTypeNames;
 
 namespace LeverXGameCollectorProject.Tests.Architecture
 {
     public class LayerDependencyTests
     {
-        private readonly Types _domainTypes = Types.InAssembly(typeof(LeverXGameCollectorProject.Domain.Interfaces.IGameRepository).Assembly);
-        private readonly Types _applicationTypes = Types.InAssembly(typeof(LeverXGameCollectorProject.Application.Interfaces.IGameService).Assembly);
-        private readonly Types _infrastructureTypes = Types.InAssembly(typeof(LeverXGameCollectorProject.Infrastructure.Persistence.InMemory.InMemoryGameRepository).Assembly);
-        private readonly Types _apiTypes = Types.InAssembly(typeof(LeverXGameCollectorProject.Controllers.GamesController).Assembly);
+        private readonly Types _domainTypes = Types.InAssembly(typeof(Domain.Interfaces.IGameRepository).Assembly);
+        private readonly Types _applicationTypes = Types.InAssembly(typeof(Application.Interfaces.IGameService).Assembly);
+        private readonly Types _infrastructureTypes = Types.InAssembly(typeof(InMemoryGameRepository).Assembly);
+        //private readonly Types _apiTypes = Types.InAssembly(typeof(Controllers.GamesController).Assembly);
 
         [Fact]
         public void Domain_Should_Not_Depend_On_Other_Layers()

@@ -4,10 +4,10 @@ namespace LeverXGameCollectorProject.Application.Interfaces
 {
     public interface IGenreService
     {
-        Task<IEnumerable<GenreDto>> GetAllGenresAsync();
-        Task<GenreDto> GetGenreByIdAsync(int id);
-        Task CreateGenreAsync(CreateGenreDto genreDto);
-        Task UpdateGenreAsync(int id, UpdateGenreDto genreDto);
+        Task<IEnumerable<GenreResponseModel>> GetAllGenresAsync();
+        Task<GenreResponseModel> GetGenreByIdAsync(int id);
+        Task CreateGenreAsync(CreateGenreRequestModel genreDto);
+        Task UpdateGenreAsync(int id, UpdateGenreResponseModel genreDto);
         Task DeleteGenreAsync(int id);
     }
 }

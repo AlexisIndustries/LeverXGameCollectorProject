@@ -9,10 +9,11 @@ namespace LeverXGameCollectorProject.Application.Interfaces
 {
     public interface IReviewService
     {
-        Task<IEnumerable<ReviewDto>> GetAllReviewsAsync();
-        Task<ReviewDto> GetReviewByIdAsync(int id);
-        Task CreateReviewAsync(CreateReviewDto reviewDto);
-        Task UpdateReviewAsync(int id, UpdateReviewDto reviewDto);
+        Task<IEnumerable<ReviewResponseModel>> GetAllReviewsAsync();
+        Task<ReviewResponseModel> GetReviewByIdAsync(int id);
+        Task CreateReviewAsync(CreateReviewRequestModel reviewDto);
+        Task UpdateReviewAsync(int id, UpdateReviewRequestModel reviewDto);
         Task DeleteReviewAsync(int id);
+        Task<IEnumerable<ReviewResponseModel>> GetReviewsByGameAsync(int gameId);
     }
 }

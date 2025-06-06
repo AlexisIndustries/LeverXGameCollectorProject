@@ -12,35 +12,53 @@ namespace LeverXGameCollectorProject.Application
     {
         public MappingProfile() 
         {
-            CreateMap<Game, GameDto>();
+            CreateMap<Game, GameResponseModel>()
+                .ForMember(dest => dest.PlatformId, opt => opt.MapFrom(src => src.Platform.Id))
+                .ForMember(dest => dest.GenreId, opt => opt.MapFrom(src => src.Genre.Id))
+                .ForMember(dest => dest.DeveloperId, opt => opt.MapFrom(src => src.Developer.Id))
+                .ReverseMap();
 
-            CreateMap<CreateGameDto, Game>();
+            CreateMap<Game, CreateGameRequestModel>().
+                ForMember(dest => dest.PlatformId, opt => opt.MapFrom(src => src.Platform.Id))
+                .ForMember(dest => dest.GenreId, opt => opt.MapFrom(src => src.Genre.Id))
+                .ForMember(dest => dest.DeveloperId, opt => opt.MapFrom(src => src.Developer.Id))
+                .ReverseMap();
 
-            CreateMap<UpdateGameDto, Game>();
+            CreateMap<Game, UpdateGameRequestModel>().
+                ForMember(dest => dest.PlatformId, opt => opt.MapFrom(src => src.Platform.Id))
+                .ForMember(dest => dest.GenreId, opt => opt.MapFrom(src => src.Genre.Id))
+                .ForMember(dest => dest.DeveloperId, opt => opt.MapFrom(src => src.Developer.Id))
+                .ReverseMap();
 
-            CreateMap<Developer, DeveloperDto>();
+            CreateMap<Developer, DeveloperResponseModel>().ReverseMap();
 
-            CreateMap<CreateDeveloperDto, Developer>();
+            CreateMap<CreateDeveloperRequestModel, Developer>().ReverseMap();
             
-            CreateMap<UpdateDeveloperDto, Developer>();
+            CreateMap<UpdateDeveloperRequestModel, Developer>().ReverseMap();
 
-            CreateMap<Genre, GenreDto>();
+            CreateMap<Genre, GenreResponseModel>().ReverseMap();
 
-            CreateMap<CreateGenreDto, Genre>();
+            CreateMap<CreateGenreRequestModel, Genre>().ReverseMap();
 
-            CreateMap<UpdateGenreDto, Genre>();
+            CreateMap<UpdateGenreResponseModel, Genre>().ReverseMap();
 
-            CreateMap<Review, ReviewDto>();
+            CreateMap<Review, ReviewResponseModel>()
+                .ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.Game.Id))
+                .ReverseMap();
 
-            CreateMap<CreateReviewDto, Review>();
+            CreateMap<Review, CreateReviewRequestModel>()
+                .ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.Game.Id))
+                .ReverseMap();
 
-            CreateMap<UpdateReviewDto, Review>();
+            CreateMap<Review, UpdateReviewRequestModel>()
+                .ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.Game.Id))
+                .ReverseMap();
 
-            CreateMap<Platform, PlatformDto>();
+            CreateMap<Platform, PlatformResponseModel>().ReverseMap();
 
-            CreateMap<CreatePlatformDto, Platform>();
+            CreateMap<CreatePlatformRequestModel, Platform>().ReverseMap();
 
-            CreateMap<UpdatePlatformDto, Platform>();
+            CreateMap<UpdatePlatformRequestModel, Platform>().ReverseMap();
 
         }
     }
