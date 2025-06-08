@@ -20,7 +20,7 @@ builder.Services.AddSingleton(new DatabaseSettings
     ConnectionString = builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString")
 });
 
-var repositoryType = builder.Configuration.GetValue<string>("RepositorySettings:RepositoryType");
+//var repositoryType = builder.Configuration.GetValue<string>("RepositorySettings:RepositoryType");
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<CreateDeveloperCommand>())
     .AddValidatorsFromAssembly(typeof(CreateDeveloperCommandValidator).Assembly);
@@ -103,8 +103,8 @@ app.UseExceptionHandler(appError =>
     });
 });
 
-var logger = app.Services.GetRequiredService<ILogger<Program>>();
-logger.LogInformation($"Application started with {repositoryType} repository", repositoryType);
+//var logger = app.Services.GetRequiredService<ILogger<Program>>();
+//logger.LogInformation($"Application started with {repositoryType} repository", repositoryType);
 
 if (app.Environment.IsDevelopment())
 {

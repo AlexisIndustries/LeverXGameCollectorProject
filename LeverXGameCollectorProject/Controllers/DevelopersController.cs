@@ -1,7 +1,6 @@
 ﻿using LeverXGameCollectorProject.Application.DTOs.Developer;
 using LeverXGameCollectorProject.Application.Features.Developer.Commands;
 using LeverXGameCollectorProject.Application.Features.Developer.Queries;
-using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

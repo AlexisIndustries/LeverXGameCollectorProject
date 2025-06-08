@@ -1,8 +1,6 @@
 ﻿using LeverXGameCollectorProject.Application.DTOs.Game;
-using LeverXGameCollectorProject.Application.Features.Developer.Queries;
 using LeverXGameCollectorProject.Application.Features.Game.Commands;
 using LeverXGameCollectorProject.Application.Features.Game.Queries;
-using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +12,11 @@ namespace LeverXGameCollectorProject.Controllers
     {
         //private readonly IGameService _gameService;
         private readonly IMediator _mediator;
+
+        public GamesController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
 
         // public GamesController(IGameService gameService)
         // {
