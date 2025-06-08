@@ -1,24 +1,24 @@
 ﻿using AutoMapper;
 using LeverXGameCollectorProject.Application.Features.Game.Commands;
-using LeverXGameCollectorProject.Domain.Interfaces;
+using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Game.Handlers
 {
     public class DeleteGameCommandHandler : IRequestHandler<DeleteGameCommand, Unit>
     {
-        private readonly IGameRepository _repository;
+        private readonly IGameService _service;
         private readonly IMapper _mapper;
 
-        public DeleteGameCommandHandler(IGameRepository repository, IMapper mapper)
+        public DeleteGameCommandHandler(IGameService service, IMapper mapper)
         {
-            _repository = repository;
+            _service = service;
             _mapper = mapper;
         }
 
         public async Task<Unit> Handle(DeleteGameCommand request, CancellationToken cancellationToken)
         {
-            await _repository.DeleteAsync(request.Id);
+            await _service.DeleteGameAsync(request.Id);
             return Unit.Value;
         }
     }

@@ -34,16 +34,22 @@ namespace LeverXGameCollectorProject.Application
                 .ReverseMap();
             CreateMap<Game, CreateGameCommand>().ReverseMap();
             CreateMap<Game, UpdateGameCommand>().ReverseMap();
+            CreateMap<CreateGameRequestModel, CreateGameCommand>().ReverseMap();
+            CreateMap<UpdateGameRequestModel, UpdateGameCommand>().ReverseMap();
 
             CreateMap<Developer, DeveloperResponseModel>().ReverseMap();
             CreateMap<CreateDeveloperRequestModel, Developer>().ReverseMap();
+            CreateMap<CreateDeveloperRequestModel, CreateDeveloperCommand>().ReverseMap();
             CreateMap<UpdateDeveloperRequestModel, Developer>().ReverseMap();
+            CreateMap<UpdateDeveloperRequestModel, UpdateDeveloperRequestModel>().ReverseMap();
             CreateMap<CreateDeveloperCommand, Developer>().ReverseMap();
             CreateMap<UpdateDeveloperCommand, Developer>().ReverseMap();
 
             CreateMap<Genre, GenreResponseModel>().ReverseMap();
             CreateMap<UpdateGenreRequestModel, Genre>().ReverseMap();
             CreateMap<CreateGenreRequestModel, Genre>().ReverseMap();
+            CreateMap<UpdateGenreRequestModel, UpdateGenreCommand>().ReverseMap();
+            CreateMap<CreateGenreRequestModel, CreateGenreCommand>().ReverseMap();
             CreateMap<UpdateGenreCommand, Genre>().ReverseMap();
             CreateMap<CreateGenreCommand, Genre>().ReverseMap();
 
@@ -58,10 +64,14 @@ namespace LeverXGameCollectorProject.Application
                 .ReverseMap();
             CreateMap<Review, CreateReviewCommand>().ReverseMap();
             CreateMap<Review, UpdateReviewCommand>().ReverseMap();
+            CreateMap<CreateReviewRequestModel, CreateReviewCommand>().ReverseMap();
+            CreateMap<UpdateReviewRequestModel, UpdateReviewCommand>().ReverseMap();
 
             CreateMap<Platform, PlatformResponseModel>().ReverseMap();
             CreateMap<CreatePlatformRequestModel, Platform>().ReverseMap();
             CreateMap<UpdatePlatformRequestModel, Platform>().ReverseMap();
+            CreateMap<CreatePlatformRequestModel, CreatePlatformCommand>().ReverseMap();
+            CreateMap<UpdatePlatformRequestModel, UpdatePlatformCommand>().ReverseMap();
             CreateMap<Platform, CreatePlatformCommand>().ReverseMap();
             CreateMap<Platform, CreatePlatformCommand>().ReverseMap();
         }

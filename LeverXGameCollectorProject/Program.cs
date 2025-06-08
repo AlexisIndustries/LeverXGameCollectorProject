@@ -1,4 +1,5 @@
 using FluentValidation;
+using LeverXGameCollectorProject.API;
 using LeverXGameCollectorProject.Application;
 using LeverXGameCollectorProject.Application.Features.Developer.Commands;
 using LeverXGameCollectorProject.Application.Features.Developer.Validators;
@@ -20,28 +21,28 @@ builder.Services.AddSingleton(new DatabaseSettings
     ConnectionString = builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString")
 });
 
-var repositoryType = builder.Configuration.GetValue<string>("RepositorySettings:RepositoryType");
+var repositoryType = builder.Configuration.GetValue<RepositoryType>("RepositorySettings:RepositoryType");
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<CreateDeveloperCommand>())
     .AddValidatorsFromAssembly(typeof(CreateDeveloperCommandValidator).Assembly);
 
-switch (repositoryType?.ToUpperInvariant())
+switch (repositoryType)
 {
-    case "DAPPER":
+    case RepositoryType.Dapper:
         builder.Services.AddInfrastructure("DAPPER");
         break;
 
-    case "EFCORE":
+    case RepositoryType.EFCore:
         builder.Services.AddInfrastructure("EFCORE");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString"),
             x => x.MigrationsAssembly("LeverXGameCollectorProject.Migrations")));
         break;
-    case "INMEMORY":
+    case RepositoryType.InMemory:
         builder.Services.AddInfrastructure();
         break;
     default:
-        var errorMessage = $"Invalid repository type: {repositoryType}. Valid options: Dapper, EFCore";
+        var errorMessage = $"Invalid repository type: {repositoryType}. Valid options: Dapper, EFCore, InMemory";
         throw new InvalidOperationException(errorMessage);
 }
 

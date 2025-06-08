@@ -1,24 +1,25 @@
 ﻿using AutoMapper;
+using LeverXGameCollectorProject.Application.DTOs.Developer;
 using LeverXGameCollectorProject.Application.Features.Developer.Commands;
-using LeverXGameCollectorProject.Domain.Interfaces;
+using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Developer.Handlers
 {
     public class UpdateDeveloperCommandHandler : IRequestHandler<UpdateDeveloperCommand, Unit>
     {
-        private readonly IDeveloperRepository _repository;
+        private readonly IDeveloperService _service;
         private readonly IMapper _mapper;
 
-        public UpdateDeveloperCommandHandler(IDeveloperRepository repository, IMapper mapper)
+        public UpdateDeveloperCommandHandler(IDeveloperService service, IMapper mapper)
         {
-            _repository = repository;
+            _service = service;
             _mapper = mapper;
         }
 
         public async Task<Unit> Handle(UpdateDeveloperCommand request, CancellationToken cancellationToken)
         {
-            await _repository.UpdateAsync(_mapper.Map<Models.Developer>(request));
+            await _service.UpdateDeveloperAsync(request.Id, _mapper.Map<UpdateDeveloperRequestModel>(request));
             return Unit.Value;
         }
     }

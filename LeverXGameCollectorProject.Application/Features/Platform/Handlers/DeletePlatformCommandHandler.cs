@@ -1,24 +1,24 @@
 ﻿using AutoMapper;
 using LeverXGameCollectorProject.Application.Features.Platform.Commands;
-using LeverXGameCollectorProject.Domain.Interfaces;
+using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Platform.Handlers
 {
     public class DeletePlatformCommandHandler : IRequestHandler<DeletePlatformCommand, Unit>
     {
-        private readonly IPlatformRepository _repository;
+        private readonly IPlatformService _service;
         private readonly IMapper _mapper;
 
-        public DeletePlatformCommandHandler(IPlatformRepository repository, IMapper mapper)
+        public DeletePlatformCommandHandler(IPlatformService service, IMapper mapper)
         {
-            _repository = repository;
+            _service = service;
             _mapper = mapper;
         }
 
         public async Task<Unit> Handle(DeletePlatformCommand request, CancellationToken cancellationToken)
         {
-            await _repository.DeleteAsync(request.Id);
+            await _service.DeletePlatformAsync(request.Id);
             return Unit.Value;
         }
     }
