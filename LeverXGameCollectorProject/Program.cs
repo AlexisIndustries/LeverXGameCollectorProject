@@ -25,25 +25,30 @@ var repositoryType = builder.Configuration.GetValue<string>("RepositorySettings:
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<CreateDeveloperCommand>())
     .AddValidatorsFromAssembly(typeof(CreateDeveloperCommandValidator).Assembly);
 
-switch (repositoryType?.ToUpperInvariant())
-{
-    case "DAPPER":
-        builder.Services.AddInfrastructure("DAPPER");
-        break;
+//switch (repositoryType?.ToUpperInvariant())
+//{
+//    case "DAPPER":
+//        builder.Services.AddInfrastructure("DAPPER");
+//        break;
 
-    case "EFCORE":
-        builder.Services.AddInfrastructure("EFCORE");
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//    case "EFCORE":
+//        builder.Services.AddInfrastructure("EFCORE");
+//        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//            options.UseNpgsql(builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString"),
+//            x => x.MigrationsAssembly("LeverXGameCollectorProject.Migrations")));
+//        break;
+//    case "INMEMORY":
+//        builder.Services.AddInfrastructure();
+//        break;
+//    default:
+//        var errorMessage = $"Invalid repository type: {repositoryType}. Valid options: Dapper, EFCore";
+//        throw new InvalidOperationException(errorMessage);
+//}
+
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString"),
             x => x.MigrationsAssembly("LeverXGameCollectorProject.Migrations")));
-        break;
-    case "INMEMORY":
-        builder.Services.AddInfrastructure();
-        break;
-    default:
-        var errorMessage = $"Invalid repository type: {repositoryType}. Valid options: Dapper, EFCore";
-        throw new InvalidOperationException(errorMessage);
-}
 
 builder.Services.AddControllers();
 
@@ -71,7 +76,8 @@ builder.Services.AddRateLimiter(options =>
 });
 
 builder.Services
-    .AddApplication();
+    .AddApplication()
+    .AddInfrastructure();
 
 var app = builder.Build();
 
