@@ -18,10 +18,9 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
             gameEntity.Developer = await _context.Developers.FindAsync(gameEntity.Developer.Id);
             gameEntity.Platform = await _context.Platforms.FindAsync(gameEntity.Platform.Id);
             gameEntity.Genre = await _context.Genres.FindAsync(gameEntity.Genre.Id);
-            await _context.Games.AddAsync(gameEntity);
-            var id = await _context.SaveChangesAsync();
-            gameEntity.Id = id;
-            return id;
+            var ent = await _context.Games.AddAsync(gameEntity);
+            await _context.SaveChangesAsync();
+            return ent.Entity.Id;
         }
 
         public async Task DeleteAsync(int id)

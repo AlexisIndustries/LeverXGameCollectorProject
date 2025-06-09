@@ -48,9 +48,9 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="genre">The genre data in JSON format.</param>  
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateGenreCommand genre)
+        public async Task<IActionResult> Create([FromBody] CreateGenreRequestModel genre)
         {
-            var id =await _mediator.Send(genre);
+            var id =await _mediator.Send(new CreateGenreCommand(genre));
             Dictionary<string, int> res = new()
             {
                 { "id", id }
@@ -64,10 +64,9 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The genre's unique ID.</param>  
         /// <param name="updatedGenre">Updated genre data in JSON format.</param>  
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateGenreCommand updatedGenre)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateGenreRequestModel updatedGenre)
         {
-            updatedGenre.Id = id;
-            await _mediator.Send(updatedGenre);
+            await _mediator.Send(new UpdateGenreCommand(id, updatedGenre));
             return NoContent();
         }
 

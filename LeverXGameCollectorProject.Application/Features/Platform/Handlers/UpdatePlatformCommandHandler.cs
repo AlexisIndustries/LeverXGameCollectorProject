@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs.Platform;
 using LeverXGameCollectorProject.Application.Features.Platform.Commands;
 using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
@@ -19,7 +18,7 @@ namespace LeverXGameCollectorProject.Application.Features.Platform.Handlers
 
         public async Task<Unit> Handle(UpdatePlatformCommand request, CancellationToken cancellationToken)
         {
-            await _service.UpdatePlatformAsync(request.Id, _mapper.Map<UpdatePlatformRequestModel>(request));
+            await _service.UpdatePlatformAsync(request.id, request.request);
             return Unit.Value;
         }
     }

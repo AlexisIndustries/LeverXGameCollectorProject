@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs.Review;
 using LeverXGameCollectorProject.Application.Features.Review.Commands;
 using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
@@ -19,7 +18,7 @@ namespace LeverXGameCollectorProject.Application.Features.Review.Handlers
 
         public async Task<Unit> Handle(UpdateReviewCommand request, CancellationToken cancellationToken)
         {
-            await _service.UpdateReviewAsync(request.Id, _mapper.Map<UpdateReviewRequestModel>(request));
+            await _service.UpdateReviewAsync(request.id, request.request);
             return Unit.Value;
         }
     }

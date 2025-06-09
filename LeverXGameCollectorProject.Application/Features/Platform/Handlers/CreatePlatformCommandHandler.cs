@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs.Platform;
 using LeverXGameCollectorProject.Application.Features.Platform.Commands;
 using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
@@ -19,8 +18,7 @@ namespace LeverXGameCollectorProject.Application.Features.Developer.Handlers
 
         public async Task<int> Handle(CreatePlatformCommand request, CancellationToken ct)
         {
-            var platform = _mapper.Map<CreatePlatformRequestModel>(request);
-            var id = await _service.CreatePlatformAsync(platform);
+            var id = await _service.CreatePlatformAsync(request.request);
             return id;
         }
     }

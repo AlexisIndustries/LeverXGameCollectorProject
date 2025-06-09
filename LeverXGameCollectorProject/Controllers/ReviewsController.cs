@@ -58,12 +58,12 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="review">The review data in JSON format.</param>  
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateReviewCommand review)
+        public async Task<IActionResult> Create([FromBody] CreateReviewRequestModel review)
         { 
             if (review.Rating < 1 || review.Rating > 5)
                 return BadRequest("Rating must be between 1 and 5.");
 
-            var id = await _mediator.Send(review);
+            var id = await _mediator.Send(new CreateReviewCommand(review));
             Dictionary<string, int> res = new()
             {
                 { "id", id }
@@ -77,10 +77,9 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The review's unique ID.</param>  
         /// <param name="updatedReview">Updated review data in JSON format.</param>  
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateReviewCommand updatedReview)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateReviewRequestModel updatedReview)
         {
-            updatedReview.Id = id;
-            await _mediator.Send(updatedReview);
+            await _mediator.Send(new UpdateReviewCommand(id, updatedReview));
 
             return NoContent();
         }

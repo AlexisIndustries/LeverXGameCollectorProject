@@ -1,11 +1,9 @@
-﻿using MediatR;
+﻿using LeverXGameCollectorProject.Application.DTOs.Platform;
+using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Platform.Commands
 {
-    public record CreatePlatformCommand : IRequest<int>
+    public record CreatePlatformCommand(CreatePlatformRequestModel request) : IRequest<int>
     {
-        public string? Name { get; init; }
-        public string? Manufacturer { get; init; }
-        public int ReleaseYear { get; init; }
     }
 }

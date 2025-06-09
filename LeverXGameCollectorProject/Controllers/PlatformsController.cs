@@ -47,9 +47,9 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="platform">The platform data in JSON format.</param>  
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreatePlatformCommand platform)
+        public async Task<IActionResult> Create([FromBody] CreatePlatformRequestModel platform)
         {
-            var id = await _mediator.Send(platform);
+            var id = await _mediator.Send(new CreatePlatformCommand(platform));
             Dictionary<string, int> res = new()
             {
                 { "id", id }
@@ -63,10 +63,9 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The platform's unique ID.</param>  
         /// <param name="updatedPlatform">Updated platform data in JSON format.</param>  
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdatePlatformCommand updatedPlatform)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdatePlatformRequestModel updatedPlatform)
         {
-            updatedPlatform.Id = id;
-            await _mediator.Send(updatedPlatform);
+            await _mediator.Send(new UpdatePlatformCommand(id, updatedPlatform));
             return NoContent();
         }
 

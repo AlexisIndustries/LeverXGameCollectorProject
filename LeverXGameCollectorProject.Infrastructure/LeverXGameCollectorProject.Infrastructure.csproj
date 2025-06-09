@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Persistence\Entities\**" />
+    <EmbeddedResource Remove="Persistence\Entities\**" />
+    <None Remove="Persistence\Entities\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
@@ -19,10 +25,6 @@
   <ItemGroup>
     <ProjectReference Include="..\LeverXGameCollectorProject.Application\LeverXGameCollectorProject.Application.csproj" />
     <ProjectReference Include="..\LeverXGameCollectorProject.Domain\LeverXGameCollectorProject.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Persistence\Entities\" />
   </ItemGroup>
 
 </Project>

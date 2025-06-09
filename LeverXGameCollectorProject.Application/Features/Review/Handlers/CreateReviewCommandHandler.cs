@@ -19,8 +19,7 @@ namespace LeverXGameCollectorProject.Application.Features.Review.Handlers
 
         public async Task<int> Handle(CreateReviewCommand request, CancellationToken ct)
         {
-            var review = _mapper.Map<CreateReviewRequestModel>(request);
-            var id = await _service.CreateReviewAsync(review);
+            var id = await _service.CreateReviewAsync(request.request);
             return id;
         }
     }

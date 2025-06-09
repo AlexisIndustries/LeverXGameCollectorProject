@@ -76,6 +76,8 @@ namespace LeverXGameCollectorProject.Application
             CreateMap<Review, UpdateReviewCommand>().ReverseMap();
             CreateMap<CreateReviewRequestModel, CreateReviewCommand>().ReverseMap();
             CreateMap<UpdateReviewRequestModel, UpdateReviewCommand>().ReverseMap();
+            CreateMap<CreateReviewRequestModel, ReviewEntity>().ReverseMap();
+            CreateMap<UpdateReviewRequestModel, ReviewEntity>().ReverseMap();
             CreateMap<ReviewEntity, ReviewResponseModel>().ReverseMap();
 
             CreateMap<Platform, PlatformResponseModel>().ReverseMap();

@@ -47,9 +47,9 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="game">The game data in JSON format.</param> 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateGameCommand game)
+        public async Task<IActionResult> Create([FromBody] CreateGameRequestModel game)
         {
-            var id = await _mediator.Send(game);
+            var id = await _mediator.Send(new CreateGameCommand(game));
             Dictionary<string, int> res = new()
             {
                 { "id", id }
@@ -63,10 +63,9 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The game's unique ID.</param>  
         /// <param name="updatedGame">Updated game data in JSON format.</param> 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateGameCommand updatedGame)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateGameRequestModel updatedGame)
         {
-            updatedGame.Id = id;
-            await _mediator.Send(updatedGame);
+            await _mediator.Send(new UpdateGameCommand(id, updatedGame));
             return NoContent();
         }
 

@@ -19,7 +19,7 @@ namespace LeverXGameCollectorProject.Application.Features.Game.Handlers
 
         public async Task<Unit> Handle(UpdateGameCommand request, CancellationToken cancellationToken)
         {
-            await _service.UpdateGameAsync(request.Id, _mapper.Map<UpdateGameRequestModel>(request));
+            await _service.UpdateGameAsync(request.id, request.request);
             return Unit.Value;
         }
     }

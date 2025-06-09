@@ -19,8 +19,7 @@ namespace LeverXGameCollectorProject.Application.Features.Developer.Handlers
 
         public async Task<int> Handle(CreateDeveloperCommand request, CancellationToken ct)
         {
-            var developer = _mapper.Map<CreateDeveloperRequestModel>(request);
-            var id = await _service.CreateDeveloperAsync(developer);
+            var id = await _service.CreateDeveloperAsync(request.request);
             return id;
         }
     }

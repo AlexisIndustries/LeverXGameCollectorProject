@@ -19,8 +19,7 @@ namespace LeverXGameCollectorProject.Application.Features.Game.Handlers
 
         public async Task<int> Handle(CreateGameCommand request, CancellationToken ct)
         {
-            var game = _mapper.Map<CreateGameRequestModel>(request);
-            var id = await _service.CreateGameAsync(game);
+            var id = await _service.CreateGameAsync(request.request);
             return id;
         }
     }

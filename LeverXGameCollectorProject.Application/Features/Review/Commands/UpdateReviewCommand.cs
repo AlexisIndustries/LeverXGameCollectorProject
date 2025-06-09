@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using LeverXGameCollectorProject.Application.DTOs.Review;
+using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Review.Commands
 {
-    public record UpdateReviewCommand : IRequest<Unit>
+    public record UpdateReviewCommand(int id, UpdateReviewRequestModel request) : IRequest<Unit>
     {
         public int Id { get; set; }
         public int GameId { get; init; }

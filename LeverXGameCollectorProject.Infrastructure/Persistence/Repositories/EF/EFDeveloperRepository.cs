@@ -15,10 +15,9 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
 
         public async Task<int> AddAsync(DeveloperEntity developerEntity)
         {
-            await _context.Developers.AddAsync(developerEntity);
-            var id = await _context.SaveChangesAsync();
-            developerEntity.Id = id;
-            return id;
+            var ent = await _context.Developers.AddAsync(developerEntity);
+            await _context.SaveChangesAsync();
+            return ent.Entity.Id;
         }
 
         public async Task DeleteAsync(int id)

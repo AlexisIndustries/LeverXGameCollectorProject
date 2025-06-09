@@ -19,8 +19,7 @@ namespace LeverXGameCollectorProject.Application.Features.Genre.Handlers
 
         public async Task<int> Handle(CreateGenreCommand request, CancellationToken ct)
         {
-            var genre = _mapper.Map<CreateGenreRequestModel>(request);
-            var id = await _service.CreateGenreAsync(genre);
+            var id = await _service.CreateGenreAsync(request.request);
             return id;
         }
     }

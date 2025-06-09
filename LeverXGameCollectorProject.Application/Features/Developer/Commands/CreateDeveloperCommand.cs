@@ -1,12 +1,9 @@
-﻿using MediatR;
+﻿using LeverXGameCollectorProject.Application.DTOs.Developer;
+using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Developer.Commands
 {
-    public record CreateDeveloperCommand : IRequest<int>
-    {
-        public string Name { get; init; }
-        public string Country { get; init; }
-        public string Website { get; init; }
-        public DateTime Founded { get; init; }
+    public record CreateDeveloperCommand(CreateDeveloperRequestModel request) : IRequest<int>
+    { 
     }
 }
