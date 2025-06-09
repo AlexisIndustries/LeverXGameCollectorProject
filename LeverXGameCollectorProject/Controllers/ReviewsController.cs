@@ -63,8 +63,12 @@ namespace LeverXGameCollectorProject.Controllers
             if (review.Rating < 1 || review.Rating > 5)
                 return BadRequest("Rating must be between 1 and 5.");
 
-            await _mediator.Send(review);
-            return Created();
+            var id = await _mediator.Send(review);
+            Dictionary<string, int> res = new()
+            {
+                { "id", id }
+            };
+            return StatusCode(StatusCodes.Status201Created, res);
         }
 
         /// <summary>  

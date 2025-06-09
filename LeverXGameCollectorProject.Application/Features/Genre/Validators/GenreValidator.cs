@@ -1,13 +1,9 @@
 ﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LeverXGameCollectorProject.Application.DTOs.Genre;
 
 namespace LeverXGameCollectorProject.Application.Features.Genre.Validators
 {
-    public class GenreValidator : AbstractValidator<Models.Genre>
+    public class GenreValidator : AbstractValidator<CreateGenreRequestModel>
     {
         public GenreValidator()
         {

@@ -19,7 +19,7 @@ namespace LeverXGameCollectorProject.Application.Features.Platform.Handlers
 
         public async Task<PlatformResponseModel> Handle(GetPlatformByIdQuery request, CancellationToken ct)
         {
-            var platform = await _service.GetByIdAsync(request.Id);
+            var platform = await _service.GetPlatformByIdAsync(request.Id);
             return _mapper.Map<PlatformResponseModel>(platform);
         }
     }

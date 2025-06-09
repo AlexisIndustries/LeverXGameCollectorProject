@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using LeverXGameCollectorProject.Domain.Interfaces;
-using LeverXGameCollectorProject.Infrastructure.Persistence.Entities;
-using LeverXGameCollectorProject.Models;
+﻿using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+using LeverXGameCollectorProject.Domain.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
@@ -9,20 +7,18 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
     public class EFPlatformRepository : IPlatformRepository
     {
         private readonly ApplicationDbContext _context;
-        private IMapper _mapper;
 
-        public EFPlatformRepository(ApplicationDbContext context, IMapper mapper)
+        public EFPlatformRepository(ApplicationDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
-        public async Task AddAsync(Platform platformEntity)
+        public async Task<int> AddAsync(PlatformEntity platformEntity)
         {
-            var entity = _mapper.Map<PlatformEntity>(platformEntity);
-            await _context.Platforms.AddAsync(entity);
-            await _context.SaveChangesAsync();
-            platformEntity.Id = entity.Id;
+            await _context.Platforms.AddAsync(platformEntity);
+            var id = await _context.SaveChangesAsync();
+            platformEntity.Id = id;
+            return id;
         }
 
         public async Task DeleteAsync(int id)
@@ -35,26 +31,25 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
             }
         }
 
-        public async Task<IEnumerable<Platform>> GetAllAsync()
+        public async Task<IEnumerable<PlatformEntity>> GetAllAsync()
         {
             var entities = await _context.Platforms.AsNoTracking()
             .ToListAsync();
 
-            return entities.Select(_mapper.Map<Platform>);
+            return entities;
         }
 
-        public async Task<Platform> GetByIdAsync(int id)
+        public async Task<PlatformEntity> GetByIdAsync(int id)
         {
             var entity = await _context.Platforms.AsNoTracking()
            .FirstOrDefaultAsync(r => r.Id == id);
 
-            return _mapper.Map<Platform>(entity);
+            return entity;
         }
 
-        public async Task UpdateAsync(Platform platformEntity)
+        public async Task UpdateAsync(PlatformEntity platformEntity)
         {
-            var entity = _mapper.Map<PlatformEntity>(platformEntity);
-            _context.Entry(entity).State = EntityState.Modified;
+            _context.Entry(platformEntity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
     }

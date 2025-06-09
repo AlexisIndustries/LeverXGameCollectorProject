@@ -2,7 +2,7 @@
 
 namespace LeverXGameCollectorProject.Application.Features.Game.Commands
 {
-    public record CreateGameCommand : IRequest<Unit>
+    public record CreateGameCommand : IRequest<int>
     {
         public string? Title { get; init; }
         public DateTime ReleaseDate { get; init; }

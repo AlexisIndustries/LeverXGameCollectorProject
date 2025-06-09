@@ -6,7 +6,7 @@ using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Developer.Handlers
 {
-    public class CreatePlatformCommandHandler : IRequestHandler<CreatePlatformCommand, Unit>
+    public class CreatePlatformCommandHandler : IRequestHandler<CreatePlatformCommand, int>
     {
         private readonly IPlatformService _service;
         private readonly IMapper _mapper;
@@ -17,11 +17,11 @@ namespace LeverXGameCollectorProject.Application.Features.Developer.Handlers
             _mapper = mapper;
         }
 
-        public async Task<Unit> Handle(CreatePlatformCommand request, CancellationToken ct)
+        public async Task<int> Handle(CreatePlatformCommand request, CancellationToken ct)
         {
             var platform = _mapper.Map<CreatePlatformRequestModel>(request);
-            await _service.CreatePlatformAsync(platform);
-            return Unit.Value;
+            var id = await _service.CreatePlatformAsync(platform);
+            return id;
         }
     }
 }

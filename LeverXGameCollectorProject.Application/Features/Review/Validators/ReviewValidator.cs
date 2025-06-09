@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
+using LeverXGameCollectorProject.Application.DTOs.Review;
 namespace LeverXGameCollectorProject.Application.Features.Review.Validators
 {
-    public class ReviewValidator : AbstractValidator<Models.Review>
+    public class ReviewValidator : AbstractValidator<CreateReviewRequestModel>
     {
         public ReviewValidator()
         {
-            RuleFor(x => x.Game.Id)
+            RuleFor(x => x.GameId)
                 .GreaterThan(0).WithMessage("Game ID is required");
 
             RuleFor(x => x.ReviewerName)

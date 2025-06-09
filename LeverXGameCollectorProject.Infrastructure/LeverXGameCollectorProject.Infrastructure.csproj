@@ -17,7 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LeverXGameCollectorProject.Application\LeverXGameCollectorProject.Application.csproj" />
     <ProjectReference Include="..\LeverXGameCollectorProject.Domain\LeverXGameCollectorProject.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Persistence\Entities\" />
   </ItemGroup>
 
 </Project>

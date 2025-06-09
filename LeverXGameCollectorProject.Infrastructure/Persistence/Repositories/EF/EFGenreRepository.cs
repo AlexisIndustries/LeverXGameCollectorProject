@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using LeverXGameCollectorProject.Domain.Interfaces;
-using LeverXGameCollectorProject.Infrastructure.Persistence.Entities;
-using LeverXGameCollectorProject.Models;
+﻿using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+using LeverXGameCollectorProject.Domain.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
@@ -9,20 +7,18 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
     public class EFGenreRepository : IGenreRepository
     {
         private readonly ApplicationDbContext _context;
-        private IMapper _mapper;
 
-        public EFGenreRepository(ApplicationDbContext context, IMapper mapper)
+        public EFGenreRepository(ApplicationDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
-        public async Task AddAsync(Genre genreEntity)
+        public async Task<int> AddAsync(GenreEntity genreEntity)
         {
-            var entity = _mapper.Map<GenreEntity>(genreEntity);
-            await _context.Genres.AddAsync(entity);
-            await _context.SaveChangesAsync();
-            genreEntity.Id = entity.Id;
+            await _context.Genres.AddAsync(genreEntity);
+            var id = await _context.SaveChangesAsync();
+            genreEntity.Id = id;
+            return id;
         }
 
         public async Task DeleteAsync(int id)
@@ -35,26 +31,25 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
             }
         }
 
-        public async Task<IEnumerable<Genre>> GetAllAsync()
+        public async Task<IEnumerable<GenreEntity>> GetAllAsync()
         {
             var entities = await _context.Genres.AsNoTracking()
             .ToListAsync();
 
-            return entities.Select(_mapper.Map<Genre>);
+            return entities;
         }
 
-        public async Task<Genre> GetByIdAsync(int id)
+        public async Task<GenreEntity> GetByIdAsync(int id)
         {
             var entity = await _context.Genres.AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == id);
 
-            return _mapper.Map<Genre>(entity);
+            return entity;
         }
 
-        public async Task UpdateAsync(Genre genreEntity)
+        public async Task UpdateAsync(GenreEntity genreEntity)
         {
-            var entity = _mapper.Map<GenreEntity>(genreEntity);
-            _context.Entry(entity).State = EntityState.Modified;
+            _context.Entry(genreEntity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
     }

@@ -6,7 +6,7 @@ using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Game.Handlers
 {
-    public class CreateGameCommandHandler : IRequestHandler<CreateGameCommand, Unit>
+    public class CreateGameCommandHandler : IRequestHandler<CreateGameCommand, int>
     {
         private readonly IGameService _service;
         private readonly IMapper _mapper;
@@ -17,11 +17,11 @@ namespace LeverXGameCollectorProject.Application.Features.Game.Handlers
             _mapper = mapper;
         }
 
-        public async Task<Unit> Handle(CreateGameCommand request, CancellationToken ct)
+        public async Task<int> Handle(CreateGameCommand request, CancellationToken ct)
         {
             var game = _mapper.Map<CreateGameRequestModel>(request);
-            await _service.CreateGameAsync(game);
-            return Unit.Value;
+            var id = await _service.CreateGameAsync(game);
+            return id;
         }
     }
 }

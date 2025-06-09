@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using LeverXGameCollectorProject.Domain.Interfaces;
-using LeverXGameCollectorProject.Infrastructure.Persistence.Entities;
-using LeverXGameCollectorProject.Models;
+﻿using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+using LeverXGameCollectorProject.Domain.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
@@ -9,20 +7,18 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
     public class EFDeveloperRepository : IDeveloperRepository
     {
         private readonly ApplicationDbContext _context;
-        private IMapper _mapper;
 
-        public EFDeveloperRepository(ApplicationDbContext context, IMapper mapper)
+        public EFDeveloperRepository(ApplicationDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
-        public async Task AddAsync(Developer developerEntity)
+        public async Task<int> AddAsync(DeveloperEntity developerEntity)
         {
-            var entity = _mapper.Map<DeveloperEntity>(developerEntity);
-            await _context.Developers.AddAsync(entity);
-            await _context.SaveChangesAsync();
-            developerEntity.Id = entity.Id;
+            await _context.Developers.AddAsync(developerEntity);
+            var id = await _context.SaveChangesAsync();
+            developerEntity.Id = id;
+            return id;
         }
 
         public async Task DeleteAsync(int id)
@@ -35,26 +31,25 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
             }
         }
 
-        public async Task<IEnumerable<Developer>> GetAllAsync()
+        public async Task<IEnumerable<DeveloperEntity>> GetAllAsync()
         {
             var entities = await _context.Developers.AsNoTracking()
             .ToListAsync();
 
-            return entities.Select(_mapper.Map<Developer>);
+            return entities;
         }
 
-        public async Task<Developer> GetByIdAsync(int id)
+        public async Task<DeveloperEntity> GetByIdAsync(int id)
         {
             var entity = await _context.Developers.AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == id);
 
-            return _mapper.Map<Developer>(entity);
+            return entity;
         }
 
-        public async Task UpdateAsync(Developer developerEntity)
+        public async Task UpdateAsync(DeveloperEntity developerEntity)
         {
-            var entity = _mapper.Map<DeveloperEntity>(developerEntity);
-            _context.Entry(entity).State = EntityState.Modified;
+            _context.Entry(developerEntity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
     }

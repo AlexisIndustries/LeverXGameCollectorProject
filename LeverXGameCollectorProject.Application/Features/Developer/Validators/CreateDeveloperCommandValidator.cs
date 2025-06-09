@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using LeverXGameCollectorProject.Application.Features.Developer.Commands;
+using LeverXGameCollectorProject.Application.DTOs.Developer;
 
 namespace LeverXGameCollectorProject.Application.Features.Developer.Validators
 {
-    public class CreateDeveloperCommandValidator : AbstractValidator<CreateDeveloperCommand>
+    public class CreateDeveloperCommandValidator : AbstractValidator<CreateDeveloperRequestModel>
     {
         public CreateDeveloperCommandValidator()
         {

@@ -6,7 +6,7 @@ using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Genre.Handlers
 {
-    public class CreateGenreCommandHandler : IRequestHandler<CreateGenreCommand, Unit>
+    public class CreateGenreCommandHandler : IRequestHandler<CreateGenreCommand, int>
     {
         private readonly IGenreService _service;
         private readonly IMapper _mapper;
@@ -17,11 +17,11 @@ namespace LeverXGameCollectorProject.Application.Features.Genre.Handlers
             _mapper = mapper;
         }
 
-        public async Task<Unit> Handle(CreateGenreCommand request, CancellationToken ct)
+        public async Task<int> Handle(CreateGenreCommand request, CancellationToken ct)
         {
             var genre = _mapper.Map<CreateGenreRequestModel>(request);
-            await _service.CreateGenreAsync(genre);
-            return Unit.Value;
+            var id = await _service.CreateGenreAsync(genre);
+            return id;
         }
     }
 }
