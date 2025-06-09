@@ -2,7 +2,7 @@
 
 namespace LeverXGameCollectorProject.Application.Features.Review.Commands
 {
-    public record CreateReviewCommand : IRequest<int>
+    public record CreateReviewCommand : IRequest<Unit>
     {
         public int GameId { get; init; }
         public string? ReviewerName { get; init; }

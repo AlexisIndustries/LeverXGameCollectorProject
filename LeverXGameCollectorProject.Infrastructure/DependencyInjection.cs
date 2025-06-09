@@ -1,4 +1,4 @@
-﻿using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+﻿using LeverXGameCollectorProject.Domain.Interfaces;
 using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dapper;
 using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF;
 using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.InMemory;

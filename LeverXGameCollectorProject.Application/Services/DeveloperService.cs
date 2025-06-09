@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using LeverXGameCollectorProject.Application.DTOs.Developer;
 using LeverXGameCollectorProject.Application.Interfaces;
-using LeverXGameCollectorProject.Domain.Persistence.Entities;
-using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+using LeverXGameCollectorProject.Domain.Interfaces;
+using LeverXGameCollectorProject.Models;
 
 namespace LeverXGameCollectorProject.Application.Services
 {
@@ -29,11 +29,10 @@ namespace LeverXGameCollectorProject.Application.Services
             return _mapper.Map<DeveloperResponseModel>(developer);
         }
 
-        public async Task<int> CreateDeveloperAsync(CreateDeveloperRequestModel developerDto)
+        public async Task CreateDeveloperAsync(CreateDeveloperRequestModel developerDto)
         {
-            var developer = _mapper.Map<DeveloperEntity>(developerDto);
-            var id = await _developerRepository.AddAsync(developer);
-            return id;
+            var developer = _mapper.Map<Developer>(developerDto);
+            await _developerRepository.AddAsync(developer);
         }
 
         public async Task UpdateDeveloperAsync(int id, UpdateDeveloperRequestModel developerDto)

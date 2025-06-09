@@ -1,6 +1,8 @@
-﻿using Dapper;
-using LeverXGameCollectorProject.Application.Repositories.Interfaces;
-using LeverXGameCollectorProject.Domain.Persistence.Entities;
+﻿using AutoMapper;
+using Dapper;
+using LeverXGameCollectorProject.Domain.Interfaces;
+using LeverXGameCollectorProject.Infrastructure.Persistence.Entities;
+using LeverXGameCollectorProject.Models;
 using Npgsql;
 
 namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dapper
@@ -8,24 +10,27 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
     public class DapperGenreRepository : IGenreRepository
     {
         private readonly DatabaseSettings _databaseSettings;
+        private IMapper _mapper;
 
-        public DapperGenreRepository(DatabaseSettings databaseSettings)
+        public DapperGenreRepository(DatabaseSettings databaseSettings, IMapper mapper)
         {
             _databaseSettings = databaseSettings;
+            _mapper = mapper;
         }
 
-        public async Task<int> AddAsync(GenreEntity genreEntity)
+        public async Task AddAsync(Genre genreEntity)
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
+                var entity = _mapper.Map<Genre>(genreEntity);
+
                 const string sql = @"
                     INSERT INTO ""Genres"" (""Name"", ""Description"", ""Popularity"")
                     VALUES (@Name, @Description, @Popularity)
                     RETURNING ""Id""";
 
-                var id = await connection.ExecuteScalarAsync<int>(sql, genreEntity);
+                var id = await connection.ExecuteScalarAsync<int>(sql, entity);
                 genreEntity.Id = id;
-                return id;
             }
         }
 
@@ -41,17 +46,17 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
             }
         }
 
-        public async Task<IEnumerable<GenreEntity>> GetAllAsync()
+        public async Task<IEnumerable<Genre>> GetAllAsync()
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
                 const string sql = "SELECT * FROM \"Genres\"";
                 var entities = await connection.QueryAsync<GenreEntity>(sql);
-                return entities;
+                return entities.Select(_mapper.Map<Genre>);
             }
         }
 
-        public async Task<GenreEntity> GetByIdAsync(int id)
+        public async Task<Genre> GetByIdAsync(int id)
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
@@ -64,14 +69,16 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
                     new { Id = id }
                 );
 
-                return result;
+                return _mapper.Map<Genre>(result);
             }
         }
 
-        public async Task UpdateAsync(GenreEntity genreEntity)
+        public async Task UpdateAsync(Genre genreEntity)
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
+                var entity = _mapper.Map<GenreEntity>(genreEntity);
+
                 const string sql = @"
                     UPDATE ""Genres"" 
                     SET ""Name"" = @Name, 
@@ -79,7 +86,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
                         ""Popularity"" = @Popularity
                     WHERE ""Id"" = @Id";
 
-                await connection.ExecuteAsync(sql, genreEntity);
+                await connection.ExecuteAsync(sql, entity);
             }
         }
     }

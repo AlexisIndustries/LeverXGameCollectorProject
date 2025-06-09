@@ -1,8 +1,13 @@
 ﻿using AutoMapper;
 using LeverXGameCollectorProject.Application.DTOs.Platform;
 using LeverXGameCollectorProject.Application.Interfaces;
-using LeverXGameCollectorProject.Domain.Persistence.Entities;
-using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+using LeverXGameCollectorProject.Domain.Interfaces;
+using LeverXGameCollectorProject.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace LeverXGameCollectorProject.Application.Services
 {
@@ -29,11 +34,10 @@ namespace LeverXGameCollectorProject.Application.Services
             return _mapper.Map<PlatformResponseModel>(platform);
         }
 
-        public async Task<int> CreatePlatformAsync(CreatePlatformRequestModel platformDto)
+        public async Task CreatePlatformAsync(CreatePlatformRequestModel platformDto)
         {
-            var platform = _mapper.Map<PlatformEntity>(platformDto);
-            var id = await _platformRepository.AddAsync(platform);
-            return id;
+            var platform = _mapper.Map<Platform>(platformDto);
+            await _platformRepository.AddAsync(platform);
         }
 
         public async Task UpdatePlatformAsync(int id, UpdatePlatformRequestModel platformDto)

@@ -1,9 +1,8 @@
 ﻿using FluentValidation;
-using LeverXGameCollectorProject.Application.DTOs.Platform;
 
 namespace LeverXGameCollectorProject.Application.Features.Platform.Validators
 {
-    public class PlatformValidator : AbstractValidator<CreatePlatformRequestModel>
+    public class PlatformValidator : AbstractValidator<Models.Platform>
     {
         public PlatformValidator()
         {

@@ -49,12 +49,8 @@ namespace LeverXGameCollectorProject.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateDeveloperCommand developer)
         {
-            var id = await _mediator.Send(developer);
-            Dictionary<string, int> res = new()
-            {
-                { "id", id }
-            };
-            return StatusCode(StatusCodes.Status201Created, res);
+            await _mediator.Send(developer);
+            return Created();
         }
 
         /// <summary>  

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LeverXGameCollectorProject.Domain.Persistence.Entities
+namespace LeverXGameCollectorProject.Infrastructure.Persistence.Entities
 {
     public class ReviewEntity
     {

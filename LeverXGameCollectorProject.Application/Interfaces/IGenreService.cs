@@ -6,7 +6,7 @@ namespace LeverXGameCollectorProject.Application.Interfaces
     {
         Task<IEnumerable<GenreResponseModel>> GetAllGenresAsync();
         Task<GenreResponseModel> GetGenreByIdAsync(int id);
-        Task<int> CreateGenreAsync(CreateGenreRequestModel genreDto);
+        Task CreateGenreAsync(CreateGenreRequestModel genreDto);
         Task UpdateGenreAsync(int id, UpdateGenreRequestModel genreDto);
         Task DeleteGenreAsync(int id);
     }

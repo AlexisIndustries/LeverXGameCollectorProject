@@ -1,9 +1,8 @@
 ﻿using FluentValidation;
-using LeverXGameCollectorProject.Application.DTOs.Game;
 
 namespace LeverXGameCollectorProject.Application.Features.Game.Validators
 {
-    public class GameValidator : AbstractValidator<CreateGameRequestModel>
+    public class GameValidator : AbstractValidator<Models.Game>
     {
         public GameValidator()
         {
@@ -17,16 +16,16 @@ namespace LeverXGameCollectorProject.Application.Features.Game.Validators
             RuleFor(x => x.Description)
                 .MaximumLength(1000).WithMessage("Description cannot exceed 1000 characters");
 
-            RuleFor(x => x.PlatformId)
-                .GreaterThan(0).When(x => x.PlatformId != null)
+            RuleFor(x => x.Platform.Id)
+                .GreaterThan(0).When(x => x.Platform?.Id != null)
                 .WithMessage("Invalid Platform ID");
 
-            RuleFor(x => x.GenreId)
-                .GreaterThan(0).When(x => x.GenreId != null)
+            RuleFor(x => x.Genre.Id)
+                .GreaterThan(0).When(x => x.Genre?.Id != null)
                 .WithMessage("Invalid Genre ID");
 
-            RuleFor(x => x.DeveloperId)
-                .GreaterThan(0).When(x => x.DeveloperId != null)
+            RuleFor(x => x.Developer.Id)
+                .GreaterThan(0).When(x => x.Developer?.Id != null)
                 .WithMessage("Invalid Developer ID");
         }
     }
