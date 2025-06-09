@@ -1,17 +1,21 @@
 using FluentValidation;
-using LeverXGameCollectorProject.API;
 using LeverXGameCollectorProject.Application;
+using LeverXGameCollectorProject.Application.Behaviors;
 using LeverXGameCollectorProject.Application.Features.Developer.Commands;
 using LeverXGameCollectorProject.Application.Features.Developer.Validators;
+using LeverXGameCollectorProject.Domain;
 using LeverXGameCollectorProject.Infrastructure;
 using LeverXGameCollectorProject.Infrastructure.Persistence;
 using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using System.Reflection;
+using System.Text;
 using System.Threading.RateLimiting;
 
 const string _errorbr = "The entry cannot be deleted, modified or inserted because it is in use, does not exist or constains invalid data.";
@@ -23,31 +27,50 @@ builder.Services.AddSingleton(new DatabaseSettings
 {
     ConnectionString = builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString")
 });
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var secretKey = Environment.GetEnvironmentVariable("SECRET_KEY") ?? jwtSettings["SecretKey"];
 
 var repositoryType = builder.Configuration.GetValue<RepositoryType>("RepositorySettings:RepositoryType");
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<CreateDeveloperCommand>())
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = jwtSettings["ValidIssuer"],
+        ValidAudience = jwtSettings["ValidAudience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+    };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdminRole",
+        policy => policy.RequireRole("Admin"));
+});
+
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssemblyContaining<CreateDeveloperCommand>();
+    cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+    }
+)
     .AddValidatorsFromAssembly(typeof(CreateDeveloperCommandValidator).Assembly);
 
-switch (repositoryType)
-{
-    case RepositoryType.Dapper:
-        builder.Services.AddInfrastructure("DAPPER");
-        break;
-
-    case RepositoryType.EFCore:
-        builder.Services.AddInfrastructure("EFCORE");
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString"),
-            x => x.MigrationsAssembly("LeverXGameCollectorProject.Migrations")));
-        break;
-    case RepositoryType.InMemory:
-        builder.Services.AddInfrastructure();
-        break;
-    default:
-        var errorMessage = $"Invalid repository type: {repositoryType}. Valid options: Dapper, EFCore, InMemory";
-        throw new InvalidOperationException(errorMessage);
-}
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString"),
+    x => x.MigrationsAssembly("LeverXGameCollectorProject.Migrations")));
 
 builder.Services.AddControllers();
 
@@ -75,7 +98,8 @@ builder.Services.AddRateLimiter(options =>
 });
 
 builder.Services
-    .AddApplication();
+    .AddApplication()
+    .AddInfrastructure(RepositoryType.EFCore);
 
 var app = builder.Build();
 
@@ -114,6 +138,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers().RequireRateLimiting("fixed");
 

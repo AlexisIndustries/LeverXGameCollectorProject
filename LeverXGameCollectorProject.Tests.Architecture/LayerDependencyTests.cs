@@ -1,6 +1,5 @@
 ﻿using LeverXGameCollectorProject.Application.Services;
 using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dapper;
-using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.InMemory;
 using LeverXGameCollectorProject.Models;
 using NetArchTest.Rules;
 
@@ -11,7 +10,7 @@ namespace LeverXGameCollectorProject.Tests.Architecture
         private readonly Types _domainTypes = Types.InAssembly(typeof(Game).Assembly);
         private readonly Types _applicationTypes = Types.InAssembly(typeof(DeveloperService).Assembly);
         private readonly Types _infrastructureTypes = Types.InAssembly(typeof(DapperDeveloperRepository).Assembly);
-        //private readonly Types _apiTypes = Types.InAssembly(typeof(Controllers.GamesController).Assembly);
+        private readonly Types _apiTypes = Types.InAssembly(typeof(Controllers.GamesController).Assembly);
 
         [Fact]
         public void Domain_Should_Not_Depend_On_Other_Layers()

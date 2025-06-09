@@ -1,4 +1,4 @@
-﻿namespace LeverXGameCollectorProject.API
+﻿namespace LeverXGameCollectorProject.Domain
 {
     public enum RepositoryType
     {
