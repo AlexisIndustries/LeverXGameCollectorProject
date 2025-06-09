@@ -1,27 +1,26 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs.Genre;
 using LeverXGameCollectorProject.Application.Features.Genre.Commands;
-using LeverXGameCollectorProject.Application.Interfaces;
+using LeverXGameCollectorProject.Domain.Interfaces;
 using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Genre.Handlers
 {
-    public class CreateGenreCommandHandler : IRequestHandler<CreateGenreCommand, int>
+    public class CreateGenreCommandHandler : IRequestHandler<CreateGenreCommand, Unit>
     {
-        private readonly IGenreService _service;
+        private readonly IGenreRepository _repository;
         private readonly IMapper _mapper;
 
-        public CreateGenreCommandHandler(IGenreService service, IMapper mapper)
+        public CreateGenreCommandHandler(IGenreRepository repository, IMapper mapper)
         {
-            _service = service;
+            _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<int> Handle(CreateGenreCommand request, CancellationToken ct)
+        public async Task<Unit> Handle(CreateGenreCommand request, CancellationToken ct)
         {
-            var genre = _mapper.Map<CreateGenreRequestModel>(request);
-            var id = await _service.CreateGenreAsync(genre);
-            return id;
+            var genre = _mapper.Map<Models.Genre>(request);
+            await _repository.AddAsync(genre);
+            return Unit.Value;
         }
     }
 }

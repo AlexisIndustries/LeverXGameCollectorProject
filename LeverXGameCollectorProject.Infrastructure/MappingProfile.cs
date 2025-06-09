@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Domain.Persistence.Entities;
+using LeverXGameCollectorProject.Infrastructure.Persistence.Entities;
 using LeverXGameCollectorProject.Models;
 
 namespace LeverXGameCollectorProject.Infrastructure

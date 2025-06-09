@@ -2,7 +2,7 @@
 
 namespace LeverXGameCollectorProject.Application.Features.Developer.Commands
 {
-    public record CreateDeveloperCommand : IRequest<int>
+    public record CreateDeveloperCommand : IRequest<Unit>
     {
         public string Name { get; init; }
         public string Country { get; init; }

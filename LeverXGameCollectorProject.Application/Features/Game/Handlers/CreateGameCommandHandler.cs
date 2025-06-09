@@ -1,27 +1,26 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs.Game;
 using LeverXGameCollectorProject.Application.Features.Game.Commands;
-using LeverXGameCollectorProject.Application.Interfaces;
+using LeverXGameCollectorProject.Domain.Interfaces;
 using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Game.Handlers
 {
-    public class CreateGameCommandHandler : IRequestHandler<CreateGameCommand, int>
+    public class CreateGameCommandHandler : IRequestHandler<CreateGameCommand, Unit>
     {
-        private readonly IGameService _service;
+        private readonly IGameRepository _repository;
         private readonly IMapper _mapper;
 
-        public CreateGameCommandHandler(IGameService service, IMapper mapper)
+        public CreateGameCommandHandler(IGameRepository repository, IMapper mapper)
         {
-            _service = service;
+            _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<int> Handle(CreateGameCommand request, CancellationToken ct)
+        public async Task<Unit> Handle(CreateGameCommand request, CancellationToken ct)
         {
-            var game = _mapper.Map<CreateGameRequestModel>(request);
-            var id = await _service.CreateGameAsync(game);
-            return id;
+            var game = _mapper.Map<Models.Game>(request);
+            await _repository.AddAsync(game);
+            return Unit.Value;
         }
     }
 }

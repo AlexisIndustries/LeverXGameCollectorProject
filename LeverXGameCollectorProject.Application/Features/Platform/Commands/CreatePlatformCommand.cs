@@ -2,7 +2,7 @@
 
 namespace LeverXGameCollectorProject.Application.Features.Platform.Commands
 {
-    public record CreatePlatformCommand : IRequest<int>
+    public record CreatePlatformCommand : IRequest<Unit>
     {
         public string? Name { get; init; }
         public string? Manufacturer { get; init; }

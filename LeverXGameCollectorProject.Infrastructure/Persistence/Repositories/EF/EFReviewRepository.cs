@@ -1,5 +1,7 @@
-﻿using LeverXGameCollectorProject.Application.Repositories.Interfaces;
-using LeverXGameCollectorProject.Domain.Persistence.Entities;
+﻿using AutoMapper;
+using LeverXGameCollectorProject.Domain.Interfaces;
+using LeverXGameCollectorProject.Infrastructure.Persistence.Entities;
+using LeverXGameCollectorProject.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
@@ -7,18 +9,20 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
     public class EFReviewRepository : IReviewRepository
     {
         private readonly ApplicationDbContext _context;
+        private IMapper _mapper;
 
-        public EFReviewRepository(ApplicationDbContext context)
+        public EFReviewRepository(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<int> AddAsync(ReviewEntity reviewEntity)
+        public async Task AddAsync(Review reviewEntity)
         {
-            await _context.Reviews.AddAsync(reviewEntity);
-            var id = await _context.SaveChangesAsync();
-            reviewEntity.Id = id;
-            return id;
+            var entity = _mapper.Map<ReviewEntity>(reviewEntity);
+            await _context.Reviews.AddAsync(entity);
+            await _context.SaveChangesAsync();
+            reviewEntity.Id = entity.Id;
         }
 
         public async Task DeleteAsync(int id)
@@ -31,37 +35,38 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
             }
         }
 
-        public async Task<IEnumerable<ReviewEntity>> GetAllAsync()
+        public async Task<IEnumerable<Review>> GetAllAsync()
         {
             var entities = await _context.Reviews.AsNoTracking()
             .Include(r => r.Game)
             .ToListAsync();
 
-            return entities;
+            return entities.Select(_mapper.Map<Review>);
         }
 
-        public async Task<IEnumerable<ReviewEntity>> GetByGameAsync(int gameId)
+        public async Task<IEnumerable<Review>> GetByGameAsync(int gameId)
         {
             var entities = await _context.Reviews
             .Where(r => r.Game.Id == gameId)
             .OrderByDescending(r => r.ReviewDate)
             .ToListAsync();
 
-            return entities;
+            return entities.Select(_mapper.Map<Review>);
         }
 
-        public async Task<ReviewEntity> GetByIdAsync(int id)
+        public async Task<Review> GetByIdAsync(int id)
         {
             var entity = await _context.Reviews
             .Include(r => r.Game)
             .FirstOrDefaultAsync(r => r.Id == id);
 
-            return entity;
+            return _mapper.Map<Review>(entity);
         }
 
-        public async Task UpdateAsync(ReviewEntity reviewEntity)
+        public async Task UpdateAsync(Review reviewEntity)
         {
-            _context.Entry(reviewEntity).State = EntityState.Modified;
+            var entity = _mapper.Map<ReviewEntity>(reviewEntity);
+            _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
     }

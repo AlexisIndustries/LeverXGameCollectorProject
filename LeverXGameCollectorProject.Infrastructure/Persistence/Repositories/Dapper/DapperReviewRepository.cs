@@ -1,6 +1,8 @@
-﻿using Dapper;
-using LeverXGameCollectorProject.Application.Repositories.Interfaces;
-using LeverXGameCollectorProject.Domain.Persistence.Entities;
+﻿using AutoMapper;
+using Dapper;
+using LeverXGameCollectorProject.Domain.Interfaces;
+using LeverXGameCollectorProject.Infrastructure.Persistence.Entities;
+using LeverXGameCollectorProject.Models;
 using Npgsql;
 
 namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dapper
@@ -8,17 +10,19 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
     public class DapperReviewRepository : IReviewRepository
     {
         private readonly DatabaseSettings _databaseSettings;
+        private IMapper _mapper;
 
-        public DapperReviewRepository(DatabaseSettings databaseSettings)
+        public DapperReviewRepository(DatabaseSettings databaseSettings, IMapper mapper)
         {
+            _mapper = mapper;
             _databaseSettings = databaseSettings;
         }
 
-        public async Task<ReviewEntity> GetByIdAsync(int id)
+        public async Task<Review> GetByIdAsync(int id)
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                var entity = await connection.QueryAsync<ReviewEntity, GameEntity, ReviewEntity>(
+                var entity = await connection.QueryAsync<ReviewEntity, GameEntity, Review>(
                     @"SELECT r.*, g.*
                       FROM ""Reviews"" r
                       LEFT JOIN ""Games"" g ON ""GameId"" = g.""Id""
@@ -26,7 +30,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
                     (review, game) =>
                     {
                         review.Game = game;
-                        return review;
+                        return _mapper.Map<Review>(review);
                     },
                     new { Id = id },
                     splitOn: "Id,Id"
@@ -35,11 +39,11 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
             }
         }
 
-        public async Task<IEnumerable<ReviewEntity>> GetByGameAsync(int gameId)
+        public async Task<IEnumerable<Review>> GetByGameAsync(int gameId)
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                var entities = await connection.QueryAsync<ReviewEntity, GameEntity, ReviewEntity>(
+                var entities = await connection.QueryAsync<ReviewEntity, GameEntity, Review>(
                     @"SELECT r.*, g.*
                       FROM ""Reviews"" r
                       LEFT JOIN ""Games"" g ON ""GameId"" = g.""Id""
@@ -47,17 +51,19 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
                     (review, game) =>
                     {
                         review.Game = game;
-                        return review;
+                        return _mapper.Map<Review>(review);
                     },
                     new { Id = gameId },
                     splitOn: "Id,Id"
                 );
-                return entities;
+                return entities.Select(_mapper.Map<Review>);
             }
         }
 
-        public async Task<int> AddAsync(ReviewEntity entity)
+        public async Task AddAsync(Review review)
         {
+            var entity = _mapper.Map<ReviewEntity>(review);
+
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString)) {
                 var parameters = new DynamicParameters();
                 parameters.Add("@GameId", entity.Game.Id);
@@ -71,13 +77,14 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
                     RETURNING ""Id""";
 
                 var id = await connection.ExecuteScalarAsync<int>(sql, parameters);
-                entity.Id = id;
-                return id;
+                review.Id = id;
             }
         }
 
-        public async Task UpdateAsync(ReviewEntity review)
+        public async Task UpdateAsync(Review review)
         {
+            var entity = _mapper.Map<ReviewEntity>(review);
+
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
                 const string sql = @"
@@ -86,7 +93,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
                     ""Rating"" = @Rating
                 WHERE ""Id"" = @Id";
 
-                await connection.ExecuteAsync(sql, review);
+                await connection.ExecuteAsync(sql, entity);
             }
         }
 
@@ -99,22 +106,22 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
             }
         }
 
-        public async Task<IEnumerable<ReviewEntity>> GetAllAsync()
+        public async Task<IEnumerable<Review>> GetAllAsync()
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                var entities = await connection.QueryAsync<ReviewEntity, GameEntity, ReviewEntity>(
+                var entities = await connection.QueryAsync<ReviewEntity, GameEntity, Review>(
                     @"SELECT r.*, g.*
                       FROM ""Reviews"" r
                       LEFT JOIN ""Games"" g ON ""GameId"" = g.""Id""",
                     (review, game) =>
                     {
                         review.Game = game;
-                        return review;
+                        return _mapper.Map<Review>(review);
                     },
                     splitOn: "Id,Id"
                 );
-                return entities;
+                return entities.Select(_mapper.Map<Review>);
             }
         }
     }

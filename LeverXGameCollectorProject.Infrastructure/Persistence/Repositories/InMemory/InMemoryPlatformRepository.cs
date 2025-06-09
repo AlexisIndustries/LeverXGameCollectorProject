@@ -1,20 +1,25 @@
-﻿using LeverXGameCollectorProject.Application.Repositories.Interfaces;
-using LeverXGameCollectorProject.Domain.Persistence.Entities;
+﻿using LeverXGameCollectorProject.Domain.Interfaces;
+using LeverXGameCollectorProject.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.InMemory
 {
     public class InMemoryPlatformRepository : IPlatformRepository
     {
-        private static List<PlatformEntity> _platforms = new()
+        private static List<Platform> _platforms = new()
         {
-            new PlatformEntity
+            new Platform
             {
                 Id = 1,
                 Name = "PC",
                 Manufacturer = "Various",
                 ReleaseYear = 1970
             },
-            new PlatformEntity
+            new Platform
             {
                 Id = 2,
                 Name = "PlayStation 5",
@@ -23,28 +28,30 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.InM
             }
         };
 
-        public async Task<PlatformEntity> GetByIdAsync(int id)
-           => _platforms.FirstOrDefault(p => p.Id == id);
+        public Task<Platform> GetByIdAsync(int id)
+           => Task.FromResult(_platforms.FirstOrDefault(p => p.Id == id));
 
-        public async Task<IEnumerable<PlatformEntity>> GetAllAsync()
-            => _platforms.AsEnumerable();
+        public Task<IEnumerable<Platform>> GetAllAsync()
+            => Task.FromResult(_platforms.AsEnumerable());
 
-        public async Task<int> AddAsync(PlatformEntity platform)
+        public Task AddAsync(Platform platform)
         {
             platform.Id = _platforms.Max(p => p.Id) + 1;
             _platforms.Add(platform);
-            return platform.Id;
+            return Task.CompletedTask;
         }
 
-        public async Task UpdateAsync(PlatformEntity entity)
+        public Task UpdateAsync(Platform entity)
         {
             var index = _platforms.FindIndex(p => p.Id == entity.Id);
             if (index >= 0) _platforms[index] = entity;
+            return Task.CompletedTask;
         }
 
-        public async Task DeleteAsync(int id)
+        public Task DeleteAsync(int id)
         {
             _platforms.RemoveAll(p => p.Id == id);
+            return Task.CompletedTask;
         }
     }
 }

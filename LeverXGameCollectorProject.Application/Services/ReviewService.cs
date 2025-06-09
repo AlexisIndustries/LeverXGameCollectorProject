@@ -1,8 +1,14 @@
 ﻿using AutoMapper;
+using LeverXGameCollectorProject.Application.DTOs.Platform;
 using LeverXGameCollectorProject.Application.DTOs.Review;
 using LeverXGameCollectorProject.Application.Interfaces;
-using LeverXGameCollectorProject.Domain.Persistence.Entities;
-using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+using LeverXGameCollectorProject.Domain.Interfaces;
+using LeverXGameCollectorProject.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace LeverXGameCollectorProject.Application.Services
 {
@@ -23,11 +29,10 @@ namespace LeverXGameCollectorProject.Application.Services
             return _mapper.Map<IEnumerable<ReviewResponseModel>>(reviews);
         }
 
-        public async Task<int> CreateReviewAsync(CreateReviewRequestModel reviewDto)
+        public async Task CreateReviewAsync(CreateReviewRequestModel reviewDto)
         {
-            var review = _mapper.Map<ReviewEntity>(reviewDto);
-            var id = await _reviewRepository.AddAsync(review);
-            return id;
+            var review = _mapper.Map<Review>(reviewDto);
+            await _reviewRepository.AddAsync(review);
         }
 
         public async Task DeleteReviewAsync(int id)

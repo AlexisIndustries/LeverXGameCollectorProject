@@ -7,7 +7,7 @@ namespace LeverXGameCollectorProject.Application.Interfaces
     {
         Task<IEnumerable<DeveloperResponseModel>> GetAllDevelopersAsync();
         Task<DeveloperResponseModel> GetDeveloperByIdAsync(int id);
-        Task<int> CreateDeveloperAsync(CreateDeveloperRequestModel developerDto);
+        Task CreateDeveloperAsync(CreateDeveloperRequestModel developerDto);
         Task UpdateDeveloperAsync(int id, UpdateDeveloperRequestModel developerDto);
         Task DeleteDeveloperAsync(int id);
     }

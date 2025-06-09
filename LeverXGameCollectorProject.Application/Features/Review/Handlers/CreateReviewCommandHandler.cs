@@ -1,27 +1,26 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs.Review;
 using LeverXGameCollectorProject.Application.Features.Review.Commands;
-using LeverXGameCollectorProject.Application.Interfaces;
+using LeverXGameCollectorProject.Domain.Interfaces;
 using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Review.Handlers
 {
-    public class CreateReviewCommandHandler : IRequestHandler<CreateReviewCommand, int>
+    public class CreateReviewCommandHandler : IRequestHandler<CreateReviewCommand, Unit>
     {
-        private readonly IReviewService _service;
+        private readonly IReviewRepository _repository;
         private readonly IMapper _mapper;
 
-        public CreateReviewCommandHandler(IReviewService service, IMapper mapper)
+        public CreateReviewCommandHandler(IReviewRepository repository, IMapper mapper)
         {
-            _service = service;
+            _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<int> Handle(CreateReviewCommand request, CancellationToken ct)
+        public async Task<Unit> Handle(CreateReviewCommand request, CancellationToken ct)
         {
-            var review = _mapper.Map<CreateReviewRequestModel>(request);
-            var id = await _service.CreateReviewAsync(review);
-            return id;
+            var review = _mapper.Map<Models.Review>(request);
+            await _repository.AddAsync(review);
+            return Unit.Value;
         }
     }
 }

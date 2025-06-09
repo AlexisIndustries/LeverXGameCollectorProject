@@ -1,27 +1,26 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs.Developer;
 using LeverXGameCollectorProject.Application.Features.Developer.Commands;
-using LeverXGameCollectorProject.Application.Interfaces;
+using LeverXGameCollectorProject.Domain.Interfaces;
 using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Developer.Handlers
 {
-    public class CreateDeveloperCommandHandler : IRequestHandler<CreateDeveloperCommand, int>
+    public class CreateDeveloperCommandHandler : IRequestHandler<CreateDeveloperCommand, Unit>
     {
-        private readonly IDeveloperService _service;
+        private readonly IDeveloperRepository _repository;
         private readonly IMapper _mapper;
 
-        public CreateDeveloperCommandHandler(IDeveloperService service, IMapper mapper)
+        public CreateDeveloperCommandHandler(IDeveloperRepository repository, IMapper mapper)
         {
-            _service = service;
+            _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<int> Handle(CreateDeveloperCommand request, CancellationToken ct)
+        public async Task<Unit> Handle(CreateDeveloperCommand request, CancellationToken ct)
         {
-            var developer = _mapper.Map<CreateDeveloperRequestModel>(request);
-            var id = await _service.CreateDeveloperAsync(developer);
-            return id;
+            var developer = _mapper.Map<Models.Developer>(request);
+            await _repository.AddAsync(developer);
+            return Unit.Value;
         }
     }
 }
