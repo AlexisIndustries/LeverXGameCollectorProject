@@ -2,12 +2,14 @@
 using LeverXGameCollectorProject.Application.Features.Game.Commands;
 using LeverXGameCollectorProject.Application.Features.Game.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class GamesController : ControllerBase
     {
         //private readonly IGameService _gameService;
@@ -26,6 +28,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// <summary>  
         /// Retrieves all games.  
         /// </summary> 
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType<IEnumerable<GameResponseModel>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllGamesQuery()));
@@ -34,6 +37,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// Retrieves a specific game by ID.  
         /// </summary>  
         /// <param name="id">The game's unique ID.</param> 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         [ProducesResponseType<GameResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)

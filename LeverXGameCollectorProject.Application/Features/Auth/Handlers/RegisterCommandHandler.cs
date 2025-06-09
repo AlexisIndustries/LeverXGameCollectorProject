@@ -1,5 +1,4 @@
-﻿using FluentValidation.Results;
-using LeverXGameCollectorProject.Application.DTOs.Auth;
+﻿using LeverXGameCollectorProject.Application.DTOs.Auth;
 using LeverXGameCollectorProject.Application.Features.Auth.Commands;
 using LeverXGameCollectorProject.Application.Interfaces;
 using LeverXGameCollectorProject.Domain.Entities.DB;

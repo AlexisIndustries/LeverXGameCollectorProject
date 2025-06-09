@@ -2,10 +2,12 @@
 using LeverXGameCollectorProject.Application.Features.Developer.Commands;
 using LeverXGameCollectorProject.Application.Features.Developer.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class DevelopersController : ControllerBase
@@ -26,6 +28,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// <summary>  
         /// Retrieves all developers.  
         /// </summary>  
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType<IEnumerable<DeveloperResponseModel>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllDevelopersQuery()));
@@ -33,7 +36,8 @@ namespace LeverXGameCollectorProject.Controllers
         /// <summary>  
         /// Retrieves a specific developer by ID.
         /// </summary>  
-        /// <param name="id">The developer's unique ID.</param>  
+        /// <param name="id">The developer's unique ID.</param> 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         [ProducesResponseType<DeveloperResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)

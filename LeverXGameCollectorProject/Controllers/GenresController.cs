@@ -3,10 +3,12 @@ using LeverXGameCollectorProject.Application.DTOs.Genre;
 using LeverXGameCollectorProject.Application.Features.Genre.Commands;
 using LeverXGameCollectorProject.Application.Features.Genre.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class GenresController : ControllerBase
@@ -27,6 +29,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// <summary>  
         /// Retrieves all genres.  
         /// </summary>  
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType<IEnumerable<GenreResponseModel>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllGenresQuery()));
@@ -36,6 +39,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="id">The genre's unique ID.</param>  
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType<GenreResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {

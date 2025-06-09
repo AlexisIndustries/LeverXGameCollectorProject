@@ -1,0 +1,44 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+        - "5050:5050"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DatabaseSettings__ConnectionString=Server=db;Port=5432;Database=GameCollectionDb;User Id=postgres;Password=12345;
+      - JwtSettings__SecretKey=${JWT_SECRET_KEY}
+      - JwtSettings__ValidIssuer=${JWT_ISSUER}
+      - JwtSettings__ValidAudience=${JWT_AUDIENCE}
+      - JwtSettings__ExpiryInMinutes=${JWT_EXPIRY_MINUTES}
+      - ASPNETCORE_URLS=http://0.0.0.0:5050
+    depends_on:
+        db:
+            condition: service_healthy
+    networks:
+      - gamecollection-net
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: GameCollectionDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - gamecollection-net
+
+networks:
+  gamecollection-net:
+
+volumes:
+  pgdata:
