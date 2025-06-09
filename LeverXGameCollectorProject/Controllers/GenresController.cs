@@ -1,5 +1,4 @@
-﻿using LeverXGameCollectorProject.Application.DTOs.Game;
-using LeverXGameCollectorProject.Application.DTOs.Genre;
+﻿using LeverXGameCollectorProject.Application.DTOs.Genre;
 using LeverXGameCollectorProject.Application.Features.Genre.Commands;
 using LeverXGameCollectorProject.Application.Features.Genre.Queries;
 using MediatR;
