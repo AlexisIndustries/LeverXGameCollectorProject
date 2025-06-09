@@ -8,6 +8,38 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
     public class DapperGameRepository : IGameRepository
     {
         private readonly DatabaseSettings _databaseSettings;
+        private const string getByIdSql = @"
+            SELECT g.*, p.*, d.*, f.*
+            FROM ""Games"" g
+            LEFT JOIN ""Platforms"" p ON g.""PlatformId"" = p.""Id""
+            LEFT JOIN ""Developers"" d ON g.""DeveloperId"" = d.""Id""
+            LEFT JOIN ""Genres"" f ON g.""GenreId"" = f.""Id""
+            WHERE g.""Id"" = @Id";
+
+        private const string getAllSql = @"
+            SELECT g.*, p.*, d.*, f.*
+            FROM ""Games"" g
+            LEFT JOIN ""Platforms"" p ON g.""PlatformId"" = p.""Id""
+            LEFT JOIN ""Developers"" d ON g.""DeveloperId"" = d.""Id""
+            LEFT JOIN ""Genres"" f ON g.""GenreId"" = f.""Id""";
+
+        private const string insertSql = @"
+            INSERT INTO ""Games"" (""Title"", ""ReleaseDate"", ""PlatformId"", ""GenreId"", ""DeveloperId"")
+            VALUES (@Title, @ReleaseDate, @PlatformId, @GenreId, @DeveloperId)
+            RETURNING ""Id""";
+
+        private const string updateSql = @"
+            UPDATE ""Games""
+            SET ""Title"" = @Title,
+                ""ReleaseDate"" = @ReleaseDate,
+                ""PlatformId"" = @PlatformId,
+                ""GenreId"" = @GenreId,
+                ""DeveloperId"" = @DeveloperId
+            WHERE ""Id"" = @Id";
+
+        private const string deleteSql = @"DELETE FROM ""Games"" WHERE ""Id"" = @Id";
+
+        private const string getByPlatformSql = @"SELECT * FROM ""Games"" g WHERE g.""PlatformId"" = @PlatformId";
 
         public DapperGameRepository(DatabaseSettings databaseSettings)
         {
@@ -16,15 +48,10 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
 
         public async Task<GameEntity> GetByIdAsync(int id)
         {
-            using (var connection = new NpgsqlConnection (_databaseSettings.ConnectionString))
+            using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
                 var result = await connection.QueryAsync<GameEntity, PlatformEntity, DeveloperEntity, GenreEntity, GameEntity>(
-                    @"SELECT g.*, p.*, d.*, f.*
-                      FROM ""Games"" g
-                      LEFT JOIN ""Platforms"" p ON g.""PlatformId"" = p.""Id""
-                      LEFT JOIN ""Developers"" d ON g.""DeveloperId"" = d.""Id""
-                      LEFT JOIN ""Genres"" f ON g.""GenreId"" = f.""Id""
-                      WHERE g.""Id"" = @Id",
+                    getByIdSql,
                     (game, platform, developer, genre) =>
                     {
                         game.Platform = platform;
@@ -45,20 +72,16 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
                 var result = await connection.QueryAsync<GameEntity, PlatformEntity, DeveloperEntity, GenreEntity, GameEntity>(
-                     @"SELECT g.*, p.*, d.*, f.* 
-                      FROM ""Games"" g
-                      LEFT JOIN ""Platforms"" p ON g.""PlatformId"" = p.""Id""
-                      LEFT JOIN ""Developers"" d ON g.""DeveloperId"" = d.""Id""
-                        LEFT JOIN ""Genres"" f ON g.""GenreId"" = f.""Id""",
-                     (game, platform, developer, genre) =>
-                     {
-                         game.Platform = platform;
-                         game.Developer = developer;
-                         game.Genre = genre;
-                         return game;
-                     },
-                     splitOn: "Id,Id"
-                 );
+                    getAllSql,
+                    (game, platform, developer, genre) =>
+                    {
+                        game.Platform = platform;
+                        game.Developer = developer;
+                        game.Genre = genre;
+                        return game;
+                    },
+                    splitOn: "Id,Id"
+                );
 
                 return result;
             }
@@ -71,16 +94,11 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
                 var parameters = new DynamicParameters();
                 parameters.Add("@Title", gameEntity.Title);
                 parameters.Add("@ReleaseDate", gameEntity.ReleaseDate);
-                parameters.Add("@Platform.Id", gameEntity.Platform?.Id);
-                parameters.Add("@Genre.Id", gameEntity.Genre?.Id);
-                parameters.Add("@Developer.Id", gameEntity.Developer?.Id);
+                parameters.Add("@PlatformId", gameEntity.Platform?.Id);
+                parameters.Add("@GenreId", gameEntity.Genre?.Id);
+                parameters.Add("@DeveloperId", gameEntity.Developer?.Id);
 
-                const string sql = @"
-                    INSERT INTO ""Games"" (""Title"", ""ReleaseDate"", ""PlatformId"", ""GenreId"", ""DeveloperId"")
-                    VALUES (@Title, @ReleaseDate, @Platform.Id, @Genre.Id, @Developer.Id)
-                    RETURNING ""Id""";
-
-                var id = await connection.ExecuteScalarAsync<int>(sql, parameters);
+                var id = await connection.ExecuteScalarAsync<int>(insertSql, parameters);
                 gameEntity.Id = id;
                 return id;
             }
@@ -94,20 +112,11 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
                 parameters.Add("@Id", gameEntity.Id);
                 parameters.Add("@Title", gameEntity.Title);
                 parameters.Add("@ReleaseDate", gameEntity.ReleaseDate);
-                parameters.Add("@Platform.Id", gameEntity.Platform?.Id);
-                parameters.Add("@Genre.Id", gameEntity.Genre?.Id);
-                parameters.Add("@Developer.Id", gameEntity.Developer?.Id);
+                parameters.Add("@PlatformId", gameEntity.Platform?.Id);
+                parameters.Add("@GenreId", gameEntity.Genre?.Id);
+                parameters.Add("@DeveloperId", gameEntity.Developer?.Id);
 
-                const string sql = @"
-                    UPDATE ""Games"" 
-                    SET ""Title"" = @Title, 
-                        ""ReleaseDate"" = @ReleaseDate,
-                        ""PlatformId"" = @Platform.Id,
-                        ""GenreId"" = @Genre.Id,
-                        ""DeveloperId"" = @Developer.Id
-                    WHERE ""Id"" = @Id";
-
-                await connection.ExecuteAsync(sql, parameters);
+                await connection.ExecuteAsync(updateSql, parameters);
             }
         }
 
@@ -115,17 +124,15 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                const string sql = "DELETE FROM \"Games\" WHERE \"Id\" = @Id";
-                await connection.ExecuteAsync(sql, new { Id = id });
+                await connection.ExecuteAsync(deleteSql, new { Id = id });
             }
         }
 
         public async Task<IEnumerable<GameEntity>> GetByPlatformAsync(int platformId)
         {
-            using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString)) 
+            using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                const string sql = @"SELECT * FROM ""Games"" g WHERE g.""Platform"".""Id"" = @PlatformId";
-                var entities = await connection.QueryAsync<GameEntity>(sql);
+                var entities = await connection.QueryAsync<GameEntity>(getByPlatformSql, new { PlatformId = platformId });
                 return entities;
             }
         }

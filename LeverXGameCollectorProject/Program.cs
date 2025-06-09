@@ -14,6 +14,9 @@ using Npgsql;
 using System.Reflection;
 using System.Threading.RateLimiting;
 
+const string _errorbr = "The entry cannot be deleted, modified or inserted because it is in use, does not exist or constains invalid data.";
+const string _erroris = "An internal server error occurred";
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton(new DatabaseSettings
@@ -86,10 +89,10 @@ app.UseExceptionHandler(appError =>
         var (statusCode, message) = exception switch
         {
             PostgresException { SqlState: "23503" } =>
-                (StatusCodes.Status400BadRequest, "The entry cannot be deleted, modified or inserted because it is in use, does not exist or constains invalid data."),
+                (StatusCodes.Status400BadRequest, _errorbr),
             DbUpdateException ex when (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23503") => 
-                (StatusCodes.Status400BadRequest, "The entry cannot be deleted, modified or inserted because it is in use, does not exist or constains invalid data."),
-            _ => (StatusCodes.Status500InternalServerError, "An internal server error occurred")
+                (StatusCodes.Status400BadRequest, _errorbr),
+            _ => (StatusCodes.Status500InternalServerError, _erroris)
         };
 
         context.Response.StatusCode = statusCode;

@@ -8,6 +8,27 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
     public class DapperGenreRepository : IGenreRepository
     {
         private readonly DatabaseSettings _databaseSettings;
+        private const string insertSql = @"
+            INSERT INTO ""Genres"" (""Name"", ""Description"", ""Popularity"")
+            VALUES (@Name, @Description, @Popularity)
+            RETURNING ""Id""";
+
+        private const string updateGamesOnDeleteSql = @"UPDATE ""Games"" SET ""GenreId"" = NULL WHERE ""GenreId"" = @Id";
+
+        private const string deleteSql = @"DELETE FROM ""Genres"" WHERE ""Id"" = @Id";
+
+        private const string selectAllSql = @"SELECT * FROM ""Genres""";
+
+        private const string selectByIdSql = @"
+            SELECT * FROM ""Genres""
+            WHERE ""Id"" = @Id";
+
+        private const string updateSql = @"
+            UPDATE ""Genres""
+            SET ""Name"" = @Name,
+                ""Description"" = @Description,
+                ""Popularity"" = @Popularity
+            WHERE ""Id"" = @Id";
 
         public DapperGenreRepository(DatabaseSettings databaseSettings)
         {
@@ -18,12 +39,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                const string sql = @"
-                    INSERT INTO ""Genres"" (""Name"", ""Description"", ""Popularity"")
-                    VALUES (@Name, @Description, @Popularity)
-                    RETURNING ""Id""";
-
-                var id = await connection.ExecuteScalarAsync<int>(sql, genreEntity);
+                var id = await connection.ExecuteScalarAsync<int>(insertSql, genreEntity);
                 genreEntity.Id = id;
                 return id;
             }
@@ -33,11 +49,8 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                await connection.ExecuteAsync(
-                    @"UPDATE ""Games"" SET ""GenreId"" = NULL WHERE ""GenreId"" = @Id",
-                    new { Id = id });
-                const string sql = "DELETE FROM \"Genres\" WHERE \"Id\" = @Id";
-                await connection.ExecuteAsync(sql, new { Id = id });
+                await connection.ExecuteAsync(updateGamesOnDeleteSql, new { Id = id });
+                await connection.ExecuteAsync(deleteSql, new { Id = id });
             }
         }
 
@@ -45,8 +58,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                const string sql = "SELECT * FROM \"Genres\"";
-                var entities = await connection.QueryAsync<GenreEntity>(sql);
+                var entities = await connection.QueryAsync<GenreEntity>(selectAllSql);
                 return entities;
             }
         }
@@ -55,12 +67,8 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                const string sql = @"
-                SELECT * FROM ""Genres""
-                WHERE ""Id"" = @Id";
-
                 var result = await connection.QueryFirstOrDefaultAsync<GenreEntity>(
-                    sql,
+                    selectByIdSql,
                     new { Id = id }
                 );
 
@@ -72,14 +80,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                const string sql = @"
-                    UPDATE ""Genres"" 
-                    SET ""Name"" = @Name, 
-                        ""Description"" = @Description,
-                        ""Popularity"" = @Popularity
-                    WHERE ""Id"" = @Id";
-
-                await connection.ExecuteAsync(sql, genreEntity);
+                await connection.ExecuteAsync(updateSql, genreEntity);
             }
         }
     }

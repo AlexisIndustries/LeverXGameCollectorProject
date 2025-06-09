@@ -8,6 +8,27 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
     public class DapperPlatformRepository : IPlatformRepository
     {
         private readonly DatabaseSettings _databaseSettings;
+        private const string insertSql = @"
+            INSERT INTO ""Platforms"" (""Name"", ""Manufacturer"", ""ReleaseYear"")
+            VALUES (@Name, @Manufacturer, @ReleaseYear)
+            RETURNING ""Id""";
+
+        private const string updateGamesOnDeleteSql = @"UPDATE ""Games"" SET ""PlatformId"" = NULL WHERE ""PlatformId"" = @Id";
+
+        private const string deleteSql = @"DELETE FROM ""Platforms"" WHERE ""Id"" = @Id";
+
+        private const string selectAllSql = @"SELECT * FROM ""Platforms""";
+
+        private const string selectByIdSql = @"
+            SELECT * FROM ""Platforms""
+            WHERE ""Id"" = @Id";
+
+        private const string updateSql = @"
+            UPDATE ""Platforms""
+            SET ""Name"" = @Name,
+                ""Manufacturer"" = @Manufacturer,
+                ""ReleaseYear"" = @ReleaseYear
+            WHERE ""Id"" = @Id";
 
         public DapperPlatformRepository(DatabaseSettings databaseSettings)
         {
@@ -18,12 +39,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                const string sql = @"
-                    INSERT INTO ""Platforms"" (""Name"", ""Manufacturer"", ""ReleaseYear"")
-                    VALUES (@Name, @Manufacturer, @ReleaseYear)
-                    RETURNING ""Id""";
-
-                var id = await connection.ExecuteScalarAsync<int>(sql, platformEntity);
+                var id = await connection.ExecuteScalarAsync<int>(insertSql, platformEntity);
                 platformEntity.Id = id;
                 return id;
             }
@@ -33,11 +49,8 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                await connection.ExecuteAsync(
-                    @"UPDATE ""Games"" SET ""PlatformId"" = NULL WHERE ""PlatformId"" = @Id",
-                    new { Id = id });
-                const string sql = "DELETE FROM \"Platforms\" WHERE \"Id\" = @Id";
-                await connection.ExecuteAsync(sql, new { Id = id });
+                await connection.ExecuteAsync(updateGamesOnDeleteSql, new { Id = id });
+                await connection.ExecuteAsync(deleteSql, new { Id = id });
             }
         }
 
@@ -45,8 +58,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                const string sql = "SELECT * FROM \"Platforms\"";
-                var entities = await connection.QueryAsync<PlatformEntity>(sql);
+                var entities = await connection.QueryAsync<PlatformEntity>(selectAllSql);
                 return entities;
             }
         }
@@ -55,12 +67,8 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                const string sql = @"
-                SELECT * FROM ""Platforms""
-                WHERE ""Id"" = @Id";
-
                 var result = await connection.QueryFirstOrDefaultAsync<PlatformEntity>(
-                    sql,
+                    selectByIdSql,
                     new { Id = id }
                 );
 
@@ -72,14 +80,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                const string sql = @"
-                    UPDATE ""Platforms"" 
-                    SET ""Name"" = @Name, 
-                        ""Manufacturer"" = @Manufacturer,
-                        ""ReleaseYear"" = @ReleaseYear
-                    WHERE ""Id"" = @Id";
-
-                await connection.ExecuteAsync(sql, platformEntity);
+                await connection.ExecuteAsync(updateSql, platformEntity);
             }
         }
     }
