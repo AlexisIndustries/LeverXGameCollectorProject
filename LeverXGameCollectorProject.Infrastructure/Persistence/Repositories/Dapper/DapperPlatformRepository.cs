@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Dapper;
-using LeverXGameCollectorProject.Domain.Interfaces;
-using LeverXGameCollectorProject.Infrastructure.Persistence.Entities;
-using LeverXGameCollectorProject.Models;
+﻿using Dapper;
+using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+using LeverXGameCollectorProject.Domain.Persistence.Entities;
 using Npgsql;
 
 namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dapper
@@ -10,27 +8,24 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
     public class DapperPlatformRepository : IPlatformRepository
     {
         private readonly DatabaseSettings _databaseSettings;
-        private IMapper _mapper;
 
-        public DapperPlatformRepository(DatabaseSettings databaseSettings, IMapper mapper)
+        public DapperPlatformRepository(DatabaseSettings databaseSettings)
         {
             _databaseSettings = databaseSettings;
-            _mapper = mapper;
         }
 
-        public async Task AddAsync(Platform platformEntity)
+        public async Task<int> AddAsync(PlatformEntity platformEntity)
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                var entity = _mapper.Map<PlatformEntity>(platformEntity);
-
                 const string sql = @"
                     INSERT INTO ""Platforms"" (""Name"", ""Manufacturer"", ""ReleaseYear"")
                     VALUES (@Name, @Manufacturer, @ReleaseYear)
                     RETURNING ""Id""";
 
-                var id = await connection.ExecuteScalarAsync<int>(sql, entity);
+                var id = await connection.ExecuteScalarAsync<int>(sql, platformEntity);
                 platformEntity.Id = id;
+                return id;
             }
         }
 
@@ -46,17 +41,17 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
             }
         }
 
-        public async Task<IEnumerable<Platform>> GetAllAsync()
+        public async Task<IEnumerable<PlatformEntity>> GetAllAsync()
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
                 const string sql = "SELECT * FROM \"Platforms\"";
                 var entities = await connection.QueryAsync<PlatformEntity>(sql);
-                return entities.Select(_mapper.Map<Platform>);
+                return entities;
             }
         }
 
-        public async Task<Platform> GetByIdAsync(int id)
+        public async Task<PlatformEntity> GetByIdAsync(int id)
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
@@ -69,16 +64,14 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
                     new { Id = id }
                 );
 
-                return _mapper.Map<Platform>(result);
+                return result;
             }
         }
 
-        public async Task UpdateAsync(Platform platformEntity)
+        public async Task UpdateAsync(PlatformEntity platformEntity)
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                var entity = _mapper.Map<PlatformEntity>(platformEntity);
-
                 const string sql = @"
                     UPDATE ""Platforms"" 
                     SET ""Name"" = @Name, 
@@ -86,7 +79,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
                         ""ReleaseYear"" = @ReleaseYear
                     WHERE ""Id"" = @Id";
 
-                await connection.ExecuteAsync(sql, entity);
+                await connection.ExecuteAsync(sql, platformEntity);
             }
         }
     }

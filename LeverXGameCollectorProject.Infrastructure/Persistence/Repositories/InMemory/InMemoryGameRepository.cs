@@ -1,48 +1,41 @@
-﻿using LeverXGameCollectorProject.Domain.Interfaces;
-using LeverXGameCollectorProject.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+using LeverXGameCollectorProject.Domain.Persistence.Entities;
 
 namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.InMemory
 {
     public class InMemoryGameRepository : IGameRepository
     {
-        private static List<Game> _games = new()
+        private static List<GameEntity> _games = new()
         {
-            new Game { Id = 1, Title = "The Witcher 3", Platform = new Platform { Id = 1 } },
-            new Game { Id = 2, Title = "Super Mario Odyssey", Platform = new Platform { Id = 2 } }
+            new GameEntity { Id = 1, Title = "The Witcher 3", Platform = new PlatformEntity { Id = 1 } },
+            new GameEntity { Id = 2, Title = "Super Mario Odyssey", Platform = new PlatformEntity { Id = 2 } }
         };
 
-        public Task<Game> GetByIdAsync(int id)
-            => Task.FromResult(_games.FirstOrDefault(g => g.Id == id));
+        public async Task<GameEntity> GetByIdAsync(int id)
+            => _games.FirstOrDefault(g => g.Id == id);
 
-        public Task<IEnumerable<Game>> GetAllAsync()
+        public Task<IEnumerable<GameEntity>> GetAllAsync()
             => Task.FromResult(_games.AsEnumerable());
 
-        public Task AddAsync(Game game)
+        public async Task<int> AddAsync(GameEntity game)
         {
             game.Id = _games.Max(g => g.Id) + 1;
             _games.Add(game);
-            return Task.CompletedTask;
+            return game.Id;
         }
 
-        public Task UpdateAsync(Game entity)
+        public async Task UpdateAsync(GameEntity entity)
         {
             var index = _games.FindIndex(g => g.Id == entity.Id);
             if (index >= 0) _games[index] = entity;
-            return Task.CompletedTask;
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
             _games.RemoveAll(g => g.Id == id);
-            return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<Game>> GetByPlatformAsync(int platformId)
-            => Task.FromResult(_games.Where(g => g.Platform.Id == platformId));
+        public async Task<IEnumerable<GameEntity>> GetByPlatformAsync(int platformId)
+            => _games.Where(g => g.Platform.Id == platformId);
     }
 }

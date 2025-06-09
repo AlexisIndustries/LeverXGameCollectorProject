@@ -1,18 +1,13 @@
-﻿using LeverXGameCollectorProject.Domain.Interfaces;
-using LeverXGameCollectorProject.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+using LeverXGameCollectorProject.Domain.Persistence.Entities;
 
 namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.InMemory
 {
     public class InMemoryDeveloperRepository : IDeveloperRepository
     {
-        private static List<Developer> _developers = new()
+        private static List<DeveloperEntity> _developers = new()
         {
-            new Developer
+            new DeveloperEntity
             {
                 Id = 1,
                 Name = "CD Projekt Red",
@@ -20,7 +15,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.InM
                 Website = "https://cdprojektred.com",
                 Founded = new DateTime(1994, 5, 1)
             },
-            new Developer
+            new DeveloperEntity
             {
                 Id = 2,
                 Name = "Nintendo",
@@ -30,20 +25,20 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.InM
             }
         };
 
-        public Task<Developer> GetByIdAsync(int id)
+        public Task<DeveloperEntity> GetByIdAsync(int id)
             => Task.FromResult(_developers.FirstOrDefault(d => d.Id == id));
 
-        public Task<IEnumerable<Developer>> GetAllAsync()
+        public Task<IEnumerable<DeveloperEntity>> GetAllAsync()
             => Task.FromResult(_developers.AsEnumerable());
 
-        public Task AddAsync(Developer developer)
+        public Task<int> AddAsync(DeveloperEntity developer)
         {
             developer.Id = _developers.Max(d => d.Id) + 1;
             _developers.Add(developer);
-            return Task.CompletedTask;
+            return Task.FromResult(developer.Id);
         }
 
-        public Task UpdateAsync(Developer entity)
+        public Task UpdateAsync(DeveloperEntity entity)
         {
             var index = _developers.FindIndex(d => d.Id == entity.Id);
             if (index >= 0) _developers[index] = entity;

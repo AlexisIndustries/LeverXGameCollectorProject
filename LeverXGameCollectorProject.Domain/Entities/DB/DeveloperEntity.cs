@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LeverXGameCollectorProject.Infrastructure.Persistence.Entities
+namespace LeverXGameCollectorProject.Domain.Persistence.Entities
 {
     public class DeveloperEntity
     {

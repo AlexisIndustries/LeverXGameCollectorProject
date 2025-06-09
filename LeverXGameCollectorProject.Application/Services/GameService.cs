@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using LeverXGameCollectorProject.Application.DTOs.Game;
 using LeverXGameCollectorProject.Application.Interfaces;
-using LeverXGameCollectorProject.Domain.Interfaces;
-using LeverXGameCollectorProject.Models;
-
+using LeverXGameCollectorProject.Domain.Persistence.Entities;
+using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+    
 namespace LeverXGameCollectorProject.Application.Services
 {
     public class GameService : IGameService
@@ -29,10 +29,11 @@ namespace LeverXGameCollectorProject.Application.Services
             return _mapper.Map<GameResponseModel>(game);
         }
 
-        public async Task CreateGameAsync(CreateGameRequestModel gameDto)
+        public async Task<int> CreateGameAsync(CreateGameRequestModel gameDto)
         {
-            var game = _mapper.Map<Game>(gameDto);
-            await _gameRepository.AddAsync(game);
+            var game = _mapper.Map<GameEntity>(gameDto);
+            var id = await _gameRepository.AddAsync(game);
+            return id;
         }
 
         public async Task UpdateGameAsync(int id, UpdateGameRequestModel gameDto)
