@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Dapper;
-using LeverXGameCollectorProject.Domain.Interfaces;
-using LeverXGameCollectorProject.Infrastructure.Persistence.Entities;
-using LeverXGameCollectorProject.Models;
+﻿using Dapper;
+using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+using LeverXGameCollectorProject.Domain.Persistence.Entities;
 using Npgsql;
 
 namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dapper
@@ -10,15 +8,13 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
     public class DapperDeveloperRepository : IDeveloperRepository
     {
         private readonly DatabaseSettings _databaseSettings;
-        private IMapper _mapper;
 
-        public DapperDeveloperRepository(DatabaseSettings databaseSettings, IMapper mapper)
+        public DapperDeveloperRepository(DatabaseSettings databaseSettings)
         {
             _databaseSettings = databaseSettings;
-            _mapper = mapper;
         }
 
-        public async Task<Developer> GetByIdAsync(int id)
+        public async Task<DeveloperEntity> GetByIdAsync(int id)
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
@@ -31,42 +27,39 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
                     new { Id = id }
                 );
 
-                return _mapper.Map<Developer>(result);
+                return result;
             }
         }
 
-        public async Task<IEnumerable<Developer>> GetAllAsync()
+        public async Task<IEnumerable<DeveloperEntity>> GetAllAsync()
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
                 const string sql = "SELECT * FROM \"Developers\"";
                 var entities = await connection.QueryAsync<DeveloperEntity>(sql);
-                return entities.Select(_mapper.Map<Developer>);
+                return entities;
             }
         }
 
-        public async Task AddAsync(Developer developerEntity)
+        public async Task<int> AddAsync(DeveloperEntity developerEntity)
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                var entity = _mapper.Map<Developer>(developerEntity);
-
                 const string sql = @"
                     INSERT INTO ""Developers"" (""Name"", ""Country"", ""Website"", ""Founded"")
                     VALUES (@Name, @Country, @Website, @Founded)
                     RETURNING ""Id""";
 
-                var id = await connection.ExecuteScalarAsync<int>(sql, entity);
+                var id = await connection.ExecuteScalarAsync<int>(sql, developerEntity);
                 developerEntity.Id = id;
+                return id;
             }
         }
 
-        public async Task UpdateAsync(Developer developerEntity)
+        public async Task UpdateAsync(DeveloperEntity developerEntity)
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                var entity = _mapper.Map<Developer>(developerEntity);
-
                 const string sql = @"
                     UPDATE ""Developers"" 
                     SET ""Name"" = @Name, 
@@ -75,7 +68,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
                         ""Founded"" = @Founded
                     WHERE ""Id"" = @Id";
 
-                await connection.ExecuteAsync(sql, entity);
+                await connection.ExecuteAsync(sql, developerEntity);
             }
         }
 

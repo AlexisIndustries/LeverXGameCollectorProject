@@ -1,13 +1,8 @@
 ﻿using AutoMapper;
 using LeverXGameCollectorProject.Application.DTOs.Genre;
 using LeverXGameCollectorProject.Application.Interfaces;
-using LeverXGameCollectorProject.Domain.Interfaces;
-using LeverXGameCollectorProject.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LeverXGameCollectorProject.Domain.Persistence.Entities;
+using LeverXGameCollectorProject.Application.Repositories.Interfaces;
 
 namespace LeverXGameCollectorProject.Application.Services
 {
@@ -34,10 +29,11 @@ namespace LeverXGameCollectorProject.Application.Services
             return _mapper.Map<GenreResponseModel>(genre);
         }
 
-        public async Task CreateGenreAsync(CreateGenreRequestModel GenreDto)
+        public async Task<int> CreateGenreAsync(CreateGenreRequestModel GenreDto)
         {
-            var genre = _mapper.Map<Genre>(GenreDto);
-            await _genreRepository.AddAsync(genre);
+            var genre = _mapper.Map<GenreEntity>(GenreDto);
+            var id = await _genreRepository.AddAsync(genre);
+            return id;
         }
 
         public async Task UpdateGenreAsync(int id, UpdateGenreRequestModel GenreDto)

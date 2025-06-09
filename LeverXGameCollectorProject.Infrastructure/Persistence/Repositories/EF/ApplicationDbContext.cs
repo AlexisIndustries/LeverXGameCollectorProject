@@ -1,4 +1,4 @@
-﻿using LeverXGameCollectorProject.Infrastructure.Persistence.Entities;
+﻿using LeverXGameCollectorProject.Domain.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF

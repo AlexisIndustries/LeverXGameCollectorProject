@@ -1,14 +1,16 @@
-﻿using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.InMemory;
+﻿using LeverXGameCollectorProject.Application.Services;
+using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dapper;
+using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.InMemory;
+using LeverXGameCollectorProject.Models;
 using NetArchTest.Rules;
-//using static System.Net.Mime.MediaTypeNames;
 
 namespace LeverXGameCollectorProject.Tests.Architecture
 {
     public class LayerDependencyTests
     {
-        private readonly Types _domainTypes = Types.InAssembly(typeof(Domain.Interfaces.IGameRepository).Assembly);
-        private readonly Types _applicationTypes = Types.InAssembly(typeof(Application.Interfaces.IGameService).Assembly);
-        private readonly Types _infrastructureTypes = Types.InAssembly(typeof(InMemoryGameRepository).Assembly);
+        private readonly Types _domainTypes = Types.InAssembly(typeof(Game).Assembly);
+        private readonly Types _applicationTypes = Types.InAssembly(typeof(DeveloperService).Assembly);
+        private readonly Types _infrastructureTypes = Types.InAssembly(typeof(DapperDeveloperRepository).Assembly);
         //private readonly Types _apiTypes = Types.InAssembly(typeof(Controllers.GamesController).Assembly);
 
         [Fact]
@@ -17,9 +19,9 @@ namespace LeverXGameCollectorProject.Tests.Architecture
             var result = _domainTypes
                 .ShouldNot()
                 .HaveDependencyOnAny(
-                    "GameCollection.Application",
-                    "GameCollection.Infrastructure",
-                    "GameCollection.API")
+                    "LeverXGameCollectorProject.Application",
+                    "LeverXGameCollectorProject.Infrastructure",
+                    "LeverXGameCollectorProject.API")
                 .GetResult();
 
             Assert.True(result.IsSuccessful);
@@ -31,8 +33,8 @@ namespace LeverXGameCollectorProject.Tests.Architecture
             var result = _applicationTypes
                 .ShouldNot()
                 .HaveDependencyOnAny(
-                    "GameCollection.Infrastructure",
-                    "GameCollection.API")
+                    "LeverXGameCollectorProject.Infrastructure",
+                    "LeverXGameCollectorProject.API")
                 .GetResult();
 
             Assert.True(result.IsSuccessful);
@@ -58,7 +60,7 @@ namespace LeverXGameCollectorProject.Tests.Architecture
                 .That()
                 .HaveNameEndingWith("UseCase")
                 .ShouldNot()
-                .HaveDependencyOn("GameCollection.Infrastructure")
+                .HaveDependencyOn("LeverXGameCollectorProject.Infrastructure")
                 .GetResult();
 
             Assert.True(result.IsSuccessful);
