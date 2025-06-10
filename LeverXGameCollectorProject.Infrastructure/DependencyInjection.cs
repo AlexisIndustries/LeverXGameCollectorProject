@@ -1,16 +1,20 @@
-﻿using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+﻿using LeverXGameCollectorProject.Domain;
+using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+using LeverXGameCollectorProject.Domain.Entities.DB;
 using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dapper;
 using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF;
 using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.InMemory;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace LeverXGameCollectorProject.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, string type)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, RepositoryType type)
         {
-            if (type == "DAPPER")
+            if (type == RepositoryType.Dapper)
             {
                 services.AddScoped<IDeveloperRepository, DapperDeveloperRepository>();
                 services.AddScoped<IReviewRepository, DapperReviewRepository>();
@@ -24,6 +28,17 @@ namespace LeverXGameCollectorProject.Infrastructure
                 services.AddScoped<IGameRepository, EFGameRepository>();
                 services.AddScoped<IGenreRepository, EFGenreRepository>();
                 services.AddScoped<IPlatformRepository, EFPlatformRepository>();
+                services.AddIdentity<UserEntity, IdentityRole>(options =>
+                {
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireUppercase = true;
+                    options.Password.RequiredLength = 8;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.User.RequireUniqueEmail = true;
+                })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
             }
             services.AddAutoMapper(typeof(MappingProfile));
             return services;

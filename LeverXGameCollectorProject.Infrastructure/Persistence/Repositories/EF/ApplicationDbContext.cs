@@ -1,9 +1,11 @@
-﻿using LeverXGameCollectorProject.Domain.Persistence.Entities;
+﻿using LeverXGameCollectorProject.Domain.Entities.DB;
+using LeverXGameCollectorProject.Domain.Persistence.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<UserEntity>
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {

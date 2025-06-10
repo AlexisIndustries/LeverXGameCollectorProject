@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs.Review;
 using LeverXGameCollectorProject.Application.Features.Review.Commands;
 using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;

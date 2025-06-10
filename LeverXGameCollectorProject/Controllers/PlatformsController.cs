@@ -2,10 +2,12 @@
 using LeverXGameCollectorProject.Application.Features.Platform.Commands;
 using LeverXGameCollectorProject.Application.Features.Platform.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class PlatformsController : ControllerBase
@@ -26,6 +28,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// <summary>  
         /// Retrieves all platforms.  
         /// </summary>  
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType<IEnumerable<PlatformResponseModel>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllPlatformsQuery()));
@@ -34,6 +37,7 @@ namespace LeverXGameCollectorProject.Controllers
         /// Retrieves a specific platform by ID.  
         /// </summary>  
         /// <param name="id">The platform's unique ID.</param>  
+        [AllowAnonymous]
         [HttpGet("{id}")]
         [ProducesResponseType<PlatformResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)

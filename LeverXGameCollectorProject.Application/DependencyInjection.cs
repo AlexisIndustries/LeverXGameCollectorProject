@@ -8,6 +8,7 @@ namespace LeverXGameCollectorProject.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
+            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IGameService, GameService>();
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<IDeveloperService, DeveloperService>();

@@ -2,10 +2,12 @@
 using LeverXGameCollectorProject.Application.Features.Review.Commands;
 using LeverXGameCollectorProject.Application.Features.Review.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ReviewsController : ControllerBase
