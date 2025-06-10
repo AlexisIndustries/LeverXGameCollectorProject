@@ -44,7 +44,7 @@ namespace LeverXGameCollectorProject.Tests.Unit
                 SecretKey = "super-secret-key-for-testing-at-least-32-characters-long",
                 ValidIssuer = "TestIssuer",
                 ValidAudience = "TestAudience",
-                ExpiryinMinutes = 60
+                ExpiryInMinutes = 60
             };
 
             var options = Options.Create(_jwtSettings);
@@ -68,7 +68,7 @@ namespace LeverXGameCollectorProject.Tests.Unit
                 LastName = "Doe"
             };
 
-            var roles = new List<string> { "User", "Premium" };
+            var roles = new List<string> { "User", "Admin" };
 
             _userManagerMock.Setup(x => x.GetRolesAsync(user))
                 .ReturnsAsync(roles);
@@ -96,10 +96,10 @@ namespace LeverXGameCollectorProject.Tests.Unit
             var roleClaims = jsonToken.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
             Assert.Equal(2, roleClaims.Count);
             Assert.Contains("User", roleClaims.Select(c => c.Value));
-            Assert.Contains("Premium", roleClaims.Select(c => c.Value));
+            Assert.Contains("Admin", roleClaims.Select(c => c.Value));
 
             // Check expiration
-            var expectedExpiry = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryinMinutes);
+            var expectedExpiry = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryInMinutes);
             var actualExpiry = jsonToken.ValidTo;
             Assert.True(actualExpiry > DateTime.UtcNow && actualExpiry <= expectedExpiry);
         }

@@ -1,36 +1,22 @@
 ﻿using LeverXGameCollectorProject.Application.DTOs.Auth;
 using LeverXGameCollectorProject.Application.Features.Auth.Queries;
-using LeverXGameCollectorProject.Domain.Entities.DB;
+using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 namespace LeverXGameCollectorProject.Application.Features.Auth.Handlers
 {
     public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, UserProfileModel>
     {
-        private readonly UserManager<UserEntity> _userManager;
+        private readonly IAuthService _service;
 
-        public GetUserProfileQueryHandler(UserManager<UserEntity> userManager)
+        public GetUserProfileQueryHandler(IAuthService service)
         {
-            _userManager = userManager;
+            _service = service;
         }
 
-        public async Task<UserProfileModel> Handle(GetUserProfileQuery request, CancellationToken ct)
+        public async Task<UserProfileModel> Handle(GetUserProfileQuery query, CancellationToken ct)
         {
-            var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user == null)
-            {
-                throw new KeyNotFoundException("User not found");
-            }
-
-            return new UserProfileModel
-            {
-                Id = user.Id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Roles = await _userManager.GetRolesAsync(user)
-            };
+            return await _service.GetUserProfileAsync(query.UserId);
         }
     }
 }

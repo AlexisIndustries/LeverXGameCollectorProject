@@ -1,7 +1,6 @@
-﻿using LeverXGameCollectorProject.Application.DTOs.Review;
-using MediatR;
+﻿using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Review.Queries
 {
-    public record GetReviewByIdQuery(int Id) : IRequest<ReviewResponseModel>;
+    public record GetReviewByIdQuery(int Id) : IRequest<Models.Review>;
 }

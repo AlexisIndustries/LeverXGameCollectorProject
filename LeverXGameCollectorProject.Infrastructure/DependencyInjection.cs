@@ -28,17 +28,6 @@ namespace LeverXGameCollectorProject.Infrastructure
                 services.AddScoped<IGameRepository, EFGameRepository>();
                 services.AddScoped<IGenreRepository, EFGenreRepository>();
                 services.AddScoped<IPlatformRepository, EFPlatformRepository>();
-                services.AddIdentity<UserEntity, IdentityRole>(options =>
-                {
-                    options.Password.RequireDigit = true;
-                    options.Password.RequireLowercase = true;
-                    options.Password.RequireUppercase = true;
-                    options.Password.RequiredLength = 8;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.User.RequireUniqueEmail = true;
-                })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
             }
             services.AddAutoMapper(typeof(MappingProfile));
             return services;

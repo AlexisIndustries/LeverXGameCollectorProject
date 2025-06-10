@@ -35,8 +35,8 @@ GameCollection API is a modern RESTful service for managing video game collectio
 docker-compose up --build
 ```
 
-The application will be available at: [http://localhost:5050](http://localhost:5050)  
-Swagger UI: [http://localhost:5050/swagger](http://localhost:5050/swagger)
+The application will be available at: [http://localhost:8080](http://localhost:8080)  
+Swagger UI: [http://localhost:8080/swagger](http://localhost:8080/swagger)
 
 ### Without Docker
 
@@ -107,4 +107,4 @@ dotnet test
 dotnet test --filter "Category=Integration"
 ```
 
-**GameCollection API** © 2023. Built with ❤️ for gaming geeks.
+**GameCollection API** © 2025. Built with ❤️ for gaming geeks.

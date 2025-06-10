@@ -3,7 +3,5 @@ using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Auth.Commands
 {
-    public record LoginCommand(LoginRequestModel request) : IRequest<AuthResponceModel>
-    {
-    }
+    public record LoginCommand(LoginRequestModel Request) : IRequest<AuthResponseModel>;
 }

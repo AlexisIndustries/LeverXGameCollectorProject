@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-        - "5050:5050"
+        - "8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - DatabaseSettings__ConnectionString=Server=db;Port=5432;Database=GameCollectionDb;User Id=postgres;Password=12345;
@@ -12,7 +12,8 @@ services:
       - JwtSettings__ValidIssuer=${JWT_ISSUER}
       - JwtSettings__ValidAudience=${JWT_AUDIENCE}
       - JwtSettings__ExpiryInMinutes=${JWT_EXPIRY_MINUTES}
-      - ASPNETCORE_URLS=http://0.0.0.0:5050
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
     depends_on:
         db:
             condition: service_healthy

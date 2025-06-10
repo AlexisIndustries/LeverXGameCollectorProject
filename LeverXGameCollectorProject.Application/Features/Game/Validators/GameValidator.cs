@@ -3,9 +3,9 @@ using LeverXGameCollectorProject.Application.DTOs.Game;
 
 namespace LeverXGameCollectorProject.Application.Features.Game.Validators
 {
-    public class GameValidator : AbstractValidator<CreateGameRequestModel>
+    public class GameRequestModelValidator : AbstractValidator<CreateGameRequestModel>
     {
-        public GameValidator()
+        public GameRequestModelValidator()
         {
             RuleFor(x => x.Title)
                 .NotEmpty().WithMessage("Game title is required")

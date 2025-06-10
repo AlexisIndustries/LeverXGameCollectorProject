@@ -5,9 +5,11 @@ namespace LeverXGameCollectorProject.Application.Interfaces
 {
     public interface IAuthService
     {
-        Task<AuthResponceModel> RegisterAsync(RegisterRequestModel request);
-        Task<AuthResponceModel> LoginAsync(LoginRequestModel request);
+        Task<AuthResponseModel> RegisterAsync(RegisterRequestModel request);
+        Task<AuthResponseModel> LoginAsync(LoginRequestModel request);
         Task<UserProfileModel> GetUserProfileAsync(string userId);
-        Task<AuthResponceModel> GenerateAuthResponse(UserEntity user);
+        Task<AuthResponseModel> GenerateAuthResponse(UserEntity user);
+        Task<UserEntity?> Login(LoginRequestModel login);
+        Task<UserEntity> Register(RegisterRequestModel register);
     }
 }

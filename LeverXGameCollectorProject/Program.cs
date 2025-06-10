@@ -5,15 +5,16 @@ using LeverXGameCollectorProject.Application.Behaviors;
 using LeverXGameCollectorProject.Application.Features.Developer.Commands;
 using LeverXGameCollectorProject.Application.Features.Developer.Validators;
 using LeverXGameCollectorProject.Domain;
+using LeverXGameCollectorProject.Domain.Entities.DB;
 using LeverXGameCollectorProject.Infrastructure;
 using LeverXGameCollectorProject.Infrastructure.Persistence;
 using LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.EF;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
@@ -21,8 +22,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.RateLimiting;
 
-const string _errorbr = "The entry cannot be deleted, modified or inserted because it is in use, does not exist or constains invalid data.";
-const string _erroris = "An internal server error occurred";
+const string _errorBr = "The entry cannot be deleted, modified or inserted because it is in use, does not exist or constains invalid data.";
+const string _errorIs = "An internal server error occurred";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,11 +46,23 @@ builder.Services.AddMediatR(cfg => {
     cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
     }
 )
-    .AddValidatorsFromAssembly(typeof(CreateDeveloperCommandValidator).Assembly);
+    .AddValidatorsFromAssembly(typeof(CreateDeveloperRequestModelValidator).Assembly);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString"),
     x => x.MigrationsAssembly("LeverXGameCollectorProject.Migrations")));
+
+builder.Services.AddIdentity<UserEntity, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = false;
+    options.User.RequireUniqueEmail = true;
+})
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddControllers();
 
@@ -134,10 +147,10 @@ app.UseExceptionHandler(appError =>
         var (statusCode, message) = exception switch
         {
             PostgresException { SqlState: "23503" } =>
-                (StatusCodes.Status400BadRequest, _errorbr),
+                (StatusCodes.Status400BadRequest, _errorBr),
             DbUpdateException ex when (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23503") => 
-                (StatusCodes.Status400BadRequest, _errorbr),
-            _ => (StatusCodes.Status500InternalServerError, _erroris)
+                (StatusCodes.Status400BadRequest, _errorBr),
+            _ => (StatusCodes.Status500InternalServerError, _errorIs)
         };
 
         context.Response.StatusCode = statusCode;

@@ -6,7 +6,7 @@ using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Review.Handlers
 {
-    public class GetReviewByIdQueryHandler : IRequestHandler<GetReviewByIdQuery, ReviewResponseModel>
+    public class GetReviewByIdQueryHandler : IRequestHandler<GetReviewByIdQuery, Models.Review>
     {
         private readonly IReviewService _service;
         private readonly IMapper _mapper;
@@ -17,10 +17,9 @@ namespace LeverXGameCollectorProject.Application.Features.Review.Handlers
             _mapper = mapper;
         }
 
-        public async Task<ReviewResponseModel> Handle(GetReviewByIdQuery request, CancellationToken ct)
+        public async Task<Models.Review> Handle(GetReviewByIdQuery query, CancellationToken ct)
         {
-            var review = await _service.GetReviewByIdAsync(request.Id);
-            return _mapper.Map<ReviewResponseModel>(review);
+            return await _service.GetReviewByIdAsync(query.Id);
         }
     }
 }

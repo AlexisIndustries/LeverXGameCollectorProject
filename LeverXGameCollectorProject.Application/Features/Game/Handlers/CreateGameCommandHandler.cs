@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs.Game;
 using LeverXGameCollectorProject.Application.Features.Game.Commands;
 using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
@@ -17,9 +16,9 @@ namespace LeverXGameCollectorProject.Application.Features.Game.Handlers
             _mapper = mapper;
         }
 
-        public async Task<int> Handle(CreateGameCommand request, CancellationToken ct)
+        public async Task<int> Handle(CreateGameCommand command, CancellationToken ct)
         {
-            var id = await _service.CreateGameAsync(request.request);
+            var id = await _service.CreateGameAsync(command.Request);
             return id;
         }
     }

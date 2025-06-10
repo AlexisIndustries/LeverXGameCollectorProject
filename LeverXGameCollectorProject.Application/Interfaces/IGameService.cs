@@ -1,11 +1,12 @@
 ﻿using LeverXGameCollectorProject.Application.DTOs.Game;
+using LeverXGameCollectorProject.Models;
 
 namespace LeverXGameCollectorProject.Application.Interfaces
 {
     public interface IGameService
     {
-        Task<IEnumerable<GameResponseModel>> GetAllGamesAsync();
-        Task<GameResponseModel> GetGameByIdAsync(int id);
+        Task<IEnumerable<Game>> GetAllGamesAsync();
+        Task<Game> GetGameByIdAsync(int id);
         Task<int> CreateGameAsync(CreateGameRequestModel gameDto);
         Task UpdateGameAsync(int id, UpdateGameRequestModel gameDto);
         Task DeleteGameAsync(int id);

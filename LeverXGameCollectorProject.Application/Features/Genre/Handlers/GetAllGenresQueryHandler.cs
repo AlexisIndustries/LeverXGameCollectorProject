@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs.Genre;
 using LeverXGameCollectorProject.Application.Features.Genre.Queries;
 using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Genre.Handlers
 {
-    public class GetAllGenreQueryHandler : IRequestHandler<GetAllGenresQuery, IEnumerable<GenreResponseModel>>
+    public class GetAllGenreQueryHandler : IRequestHandler<GetAllGenresQuery, IEnumerable<Models.Genre>>
     {
         private readonly IGenreService _service;
         private readonly IMapper _mapper;
@@ -17,10 +16,9 @@ namespace LeverXGameCollectorProject.Application.Features.Genre.Handlers
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<GenreResponseModel>> Handle(GetAllGenresQuery request, CancellationToken ct)
+        public async Task<IEnumerable<Models.Genre>> Handle(GetAllGenresQuery query, CancellationToken ct)
         {
-            var genres = await _service.GetAllGenresAsync();
-            return genres.Select(_mapper.Map<GenreResponseModel>);
+            return await _service.GetAllGenresAsync();
         }
     }
 }

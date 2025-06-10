@@ -2,9 +2,9 @@
 using LeverXGameCollectorProject.Application.DTOs.Review;
 namespace LeverXGameCollectorProject.Application.Features.Review.Validators
 {
-    public class ReviewValidator : AbstractValidator<CreateReviewRequestModel>
+    public class CreateReviewRequestModelValidator : AbstractValidator<CreateReviewRequestModel>
     {
-        public ReviewValidator()
+        public CreateReviewRequestModelValidator()
         {
             RuleFor(x => x.GameId)
                 .GreaterThan(0).WithMessage("Game ID is required");

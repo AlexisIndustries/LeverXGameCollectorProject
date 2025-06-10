@@ -1,7 +1,6 @@
-﻿using LeverXGameCollectorProject.Application.DTOs.Platform;
-using MediatR;
+﻿using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Platform.Queries
 {
-    public record GetAllPlatformsQuery : IRequest<IEnumerable<PlatformResponseModel>>;
+    public record GetAllPlatformsQuery : IRequest<IEnumerable<Models.Platform>>;
 }

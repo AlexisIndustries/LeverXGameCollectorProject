@@ -1,4 +1,5 @@
-﻿using LeverXGameCollectorProject.Application.DTOs.Developer;
+﻿using AutoMapper;
+using LeverXGameCollectorProject.Application.DTOs.Developer;
 using LeverXGameCollectorProject.Application.Features.Developer.Commands;
 using LeverXGameCollectorProject.Application.Features.Developer.Queries;
 using MediatR;
@@ -12,38 +13,37 @@ namespace LeverXGameCollectorProject.Controllers
     [Route("api/[controller]")]
     public class DevelopersController : ControllerBase
     {
-        //private readonly IDeveloperService _developerService;
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public DevelopersController(IMediator mediator)
+        public DevelopersController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
         }
-
-        // public DevelopersController(IDeveloperService developerService)
-        // {
-        //     _developerService = developerService;
-        // }
 
         /// <summary>  
         /// Retrieves all developers.  
-        /// </summary>  
-        [AllowAnonymous]
+        /// </summary>
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType<IEnumerable<DeveloperResponseModel>>(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllDevelopersQuery()));
-
+        public async Task<IActionResult> GetAll() {
+            var developers = await _mediator.Send(new GetAllDevelopersQuery());
+            return Ok(developers.Select(_mapper.Map<DeveloperResponseModel>));
+        }
         /// <summary>  
         /// Retrieves a specific developer by ID.
         /// </summary>  
         /// <param name="id">The developer's unique ID.</param> 
-        [AllowAnonymous]
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType<DeveloperResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {
             var developer = await _mediator.Send(new GetDeveloperByIdQuery(id));
-            return developer == null ? NotFound() : Ok(developer);
+            var model = _mapper.Map<DeveloperResponseModel>(developer);
+            return model == null ? NotFound() : Ok(model);
         }
 
         /// <summary>  

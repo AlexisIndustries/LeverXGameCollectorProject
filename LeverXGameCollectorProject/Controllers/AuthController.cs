@@ -21,6 +21,12 @@ namespace LeverXGameCollectorProject.Controllers
             _mediator = mediator;
         }
 
+        /// <summary>
+        /// Registers a new user
+        /// </summary>
+        /// <param name="command">User registration data</param>
+        /// <response code="200">Returns authentication tokens and user details</response>
+        /// <response code="400">If input validation fails or application error occurs</response>
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequestModel command)
         {
@@ -35,10 +41,16 @@ namespace LeverXGameCollectorProject.Controllers
             }
             catch (ApplicationException ex)
             {
-                return BadRequest();
+                return BadRequest(new { errors = ex.Message });
             }
         }
 
+        /// <summary>
+        /// Authenticates a user and provides access credentials
+        /// </summary>
+        /// <param name="command">User login credentials</param>
+        /// <response code="200">Returns authentication tokens</response>
+        /// <response code="401">If invalid credentials are provided</response>
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequestModel command)
         {
@@ -49,12 +61,21 @@ namespace LeverXGameCollectorProject.Controllers
             }
             catch (ApplicationException ex)
             {
-                return Unauthorized();
+                return Unauthorized(new { errors = ex.Message });
             }
         }
 
-        [Authorize]
+        /// <summary>
+        /// Retrieves authenticated user's profile information
+        /// </summary>
+        /// <remarks>
+        /// Requires valid JWT token in Authorization header
+        /// </remarks>
+        /// <response code="200">Returns user profile data</response>
+        /// <response code="401">If authentication token is missing or invalid</response>
+        /// <response code="404">If user profile doesn't exist</response>
         [HttpGet("profile")]
+        [Authorize]
         public async Task<IActionResult> GetProfile()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

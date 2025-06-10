@@ -3,9 +3,9 @@ using LeverXGameCollectorProject.Application.DTOs.Developer;
 
 namespace LeverXGameCollectorProject.Application.Features.Developer.Validators
 {
-    public class CreateDeveloperCommandValidator : AbstractValidator<CreateDeveloperRequestModel>
+    public class CreateDeveloperRequestModelValidator : AbstractValidator<CreateDeveloperRequestModel>
     {
-        public CreateDeveloperCommandValidator()
+        public CreateDeveloperRequestModelValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required")

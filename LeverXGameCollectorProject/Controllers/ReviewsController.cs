@@ -1,4 +1,5 @@
-﻿using LeverXGameCollectorProject.Application.DTOs.Review;
+﻿using AutoMapper;
+using LeverXGameCollectorProject.Application.DTOs.Review;
 using LeverXGameCollectorProject.Application.Features.Review.Commands;
 using LeverXGameCollectorProject.Application.Features.Review.Queries;
 using MediatR;
@@ -12,25 +13,25 @@ namespace LeverXGameCollectorProject.Controllers
     [Route("api/[controller]")]
     public class ReviewsController : ControllerBase
     {
-        //private readonly IReviewService _reviewService;
         private IMediator _mediator;
+        private IMapper _mapper;
 
-        public ReviewsController(IMediator mediator)
+        public ReviewsController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
         }
-
-        // public ReviewsController(IReviewService reviewService)
-        // {
-        //     _reviewService = reviewService;
-        // }
 
         /// <summary>  
         /// Retrieves all reviews.  
         /// </summary>  
         [HttpGet]
         [ProducesResponseType<IEnumerable<ReviewResponseModel>>(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllReviewQuery()));
+        public async Task<IActionResult> GetAll()
+        {
+            var reviews = await _mediator.Send(new GetAllReviewQuery());
+            return Ok(reviews.Select(_mapper.Map<ReviewResponseModel>));
+        }
 
         /// <summary>  
         /// Retrieves a specific review by ID. 
@@ -40,8 +41,8 @@ namespace LeverXGameCollectorProject.Controllers
         [ProducesResponseType<ReviewResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetByGameId(int gameId)
         {
-            var reviews = await _mediator.Send(new GetReviewByGameIdQuery(gameId));
-            return Ok(reviews);
+            var review = await _mediator.Send(new GetReviewByGameIdQuery(gameId));
+            return Ok(_mapper.Map<ReviewResponseModel>(review));
         }
 
         /// <summary>  
@@ -52,7 +53,7 @@ namespace LeverXGameCollectorProject.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var reviews = await _mediator.Send(new GetReviewByIdQuery(id));
-            return Ok(reviews);
+            return Ok(_mapper.Map<ReviewResponseModel>(reviews));
         }
 
         /// <summary>  

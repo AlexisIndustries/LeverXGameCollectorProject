@@ -5,6 +5,6 @@
         public string? SecretKey { get; init; }
         public string? ValidIssuer { get; init; }
         public string? ValidAudience { get; init; }
-        public double ExpiryinMinutes { get; init; }
+        public double ExpiryInMinutes { get; init; }
     }
 }

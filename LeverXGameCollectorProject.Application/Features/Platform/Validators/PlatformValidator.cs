@@ -3,9 +3,9 @@ using LeverXGameCollectorProject.Application.DTOs.Platform;
 
 namespace LeverXGameCollectorProject.Application.Features.Platform.Validators
 {
-    public class PlatformValidator : AbstractValidator<CreatePlatformRequestModel>
+    public class CreatePlatformRequestModelValidator : AbstractValidator<CreatePlatformRequestModel>
     {
-        public PlatformValidator()
+        public CreatePlatformRequestModelValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Platform name is required")

@@ -1,7 +1,6 @@
-﻿using LeverXGameCollectorProject.Application.DTOs.Developer;
-using MediatR;
+﻿using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Developer.Queries
 {
-    public record GetAllDevelopersQuery : IRequest<IEnumerable<DeveloperResponseModel>>;
+    public record GetAllDevelopersQuery : IRequest<IEnumerable<Models.Developer>>;
 }

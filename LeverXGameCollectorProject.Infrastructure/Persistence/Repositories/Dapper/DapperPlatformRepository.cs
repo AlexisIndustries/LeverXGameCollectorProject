@@ -8,22 +8,22 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
     public class DapperPlatformRepository : IPlatformRepository
     {
         private readonly DatabaseSettings _databaseSettings;
-        private const string insertSql = @"
+        private const string _insertSql = @"
             INSERT INTO ""Platforms"" (""Name"", ""Manufacturer"", ""ReleaseYear"")
             VALUES (@Name, @Manufacturer, @ReleaseYear)
             RETURNING ""Id""";
 
-        private const string updateGamesOnDeleteSql = @"UPDATE ""Games"" SET ""PlatformId"" = NULL WHERE ""PlatformId"" = @Id";
+        private const string _updateGamesOnDeleteSql = @"UPDATE ""Games"" SET ""PlatformId"" = NULL WHERE ""PlatformId"" = @Id";
 
-        private const string deleteSql = @"DELETE FROM ""Platforms"" WHERE ""Id"" = @Id";
+        private const string _deleteSql = @"DELETE FROM ""Platforms"" WHERE ""Id"" = @Id";
 
-        private const string selectAllSql = @"SELECT * FROM ""Platforms""";
+        private const string _selectAllSql = @"SELECT * FROM ""Platforms""";
 
-        private const string selectByIdSql = @"
+        private const string _selectByIdSql = @"
             SELECT * FROM ""Platforms""
             WHERE ""Id"" = @Id";
 
-        private const string updateSql = @"
+        private const string _updateSql = @"
             UPDATE ""Platforms""
             SET ""Name"" = @Name,
                 ""Manufacturer"" = @Manufacturer,
@@ -39,7 +39,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                var id = await connection.ExecuteScalarAsync<int>(insertSql, platformEntity);
+                var id = await connection.ExecuteScalarAsync<int>(_insertSql, platformEntity);
                 platformEntity.Id = id;
                 return id;
             }
@@ -49,8 +49,8 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                await connection.ExecuteAsync(updateGamesOnDeleteSql, new { Id = id });
-                await connection.ExecuteAsync(deleteSql, new { Id = id });
+                await connection.ExecuteAsync(_updateGamesOnDeleteSql, new { Id = id });
+                await connection.ExecuteAsync(_deleteSql, new { Id = id });
             }
         }
 
@@ -58,7 +58,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                var entities = await connection.QueryAsync<PlatformEntity>(selectAllSql);
+                var entities = await connection.QueryAsync<PlatformEntity>(_selectAllSql);
                 return entities;
             }
         }
@@ -68,7 +68,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
                 var result = await connection.QueryFirstOrDefaultAsync<PlatformEntity>(
-                    selectByIdSql,
+                    _selectByIdSql,
                     new { Id = id }
                 );
 
@@ -80,7 +80,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                await connection.ExecuteAsync(updateSql, platformEntity);
+                await connection.ExecuteAsync(_updateSql, platformEntity);
             }
         }
     }

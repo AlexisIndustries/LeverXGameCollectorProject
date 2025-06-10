@@ -16,9 +16,9 @@ namespace LeverXGameCollectorProject.Application.Features.Platform.Handlers
             _mapper = mapper;
         }
 
-        public async Task<Unit> Handle(DeletePlatformCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DeletePlatformCommand command, CancellationToken cancellationToken)
         {
-            await _service.DeletePlatformAsync(request.Id);
+            await _service.DeletePlatformAsync(command.Id);
             return Unit.Value;
         }
     }

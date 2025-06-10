@@ -9,32 +9,32 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
     {
         private readonly DatabaseSettings _databaseSettings;
 
-        private const string getByIdSql = @"
+        private const string _getByIdSql = @"
             SELECT r.*, g.*
             FROM ""Reviews"" r
             LEFT JOIN ""Games"" g ON r.""GameId"" = g.""Id""
             WHERE r.""Id"" = @Id";
 
-        private const string getByGameSql = @"
+        private const string _getByGameSql = @"
             SELECT r.*, g.*
             FROM ""Reviews"" r
             LEFT JOIN ""Games"" g ON r.""GameId"" = g.""Id""
             WHERE r.""GameId"" = @Id";
 
-        private const string insertSql = @"
+        private const string _insertSql = @"
             INSERT INTO ""Reviews"" (""GameId"", ""ReviewerName"", ""Rating"", ""Comment"", ""ReviewDate"")
             VALUES (@GameId, @ReviewerName, @Rating, @Comment, @ReviewDate)
             RETURNING ""Id""";
 
-        private const string updateSql = @"
+        private const string _updateSql = @"
             UPDATE ""Reviews""
             SET ""Comment"" = @Comment,
                 ""Rating"" = @Rating
             WHERE ""Id"" = @Id";
 
-        private const string deleteSql = @"DELETE FROM ""Reviews"" WHERE ""Id"" = @Id";
+        private const string _deleteSql = @"DELETE FROM ""Reviews"" WHERE ""Id"" = @Id";
 
-        private const string getAllSql = @"
+        private const string _getAllSql = @"
             SELECT r.*, g.*
             FROM ""Reviews"" r
             LEFT JOIN ""Games"" g ON r.""GameId"" = g.""Id""";
@@ -49,7 +49,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
                 var entity = await connection.QueryAsync<ReviewEntity, GameEntity, ReviewEntity>(
-                    getByIdSql,
+                    _getByIdSql,
                     (review, game) =>
                     {
                         review.Game = game;
@@ -67,7 +67,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
                 var entities = await connection.QueryAsync<ReviewEntity, GameEntity, ReviewEntity>(
-                    getByGameSql,
+                    _getByGameSql,
                     (review, game) =>
                     {
                         review.Game = game;
@@ -91,7 +91,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
                 parameters.Add("@Comment", entity.Comment);
                 parameters.Add("@ReviewDate", entity.ReviewDate);
 
-                var id = await connection.ExecuteScalarAsync<int>(insertSql, parameters);
+                var id = await connection.ExecuteScalarAsync<int>(_insertSql, parameters);
                 entity.Id = id;
                 return id;
             }
@@ -101,7 +101,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                await connection.ExecuteAsync(updateSql, review);
+                await connection.ExecuteAsync(_updateSql, review);
             }
         }
 
@@ -109,7 +109,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
         {
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
-                await connection.ExecuteAsync(deleteSql, new { Id = id });
+                await connection.ExecuteAsync(_deleteSql, new { Id = id });
             }
         }
 
@@ -118,7 +118,7 @@ namespace LeverXGameCollectorProject.Infrastructure.Persistence.Repositories.Dap
             using (var connection = new NpgsqlConnection(_databaseSettings.ConnectionString))
             {
                 var entities = await connection.QueryAsync<ReviewEntity, GameEntity, ReviewEntity>(
-                    getAllSql,
+                    _getAllSql,
                     (review, game) =>
                     {
                         review.Game = game;

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs.Genre;
 using LeverXGameCollectorProject.Application.Features.Genre.Commands;
 using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
@@ -17,9 +16,9 @@ namespace LeverXGameCollectorProject.Application.Features.Genre.Handlers
             _mapper = mapper;
         }
 
-        public async Task<int> Handle(CreateGenreCommand request, CancellationToken ct)
+        public async Task<int> Handle(CreateGenreCommand command, CancellationToken ct)
         {
-            var id = await _service.CreateGenreAsync(request.request);
+            var id = await _service.CreateGenreAsync(command.Request);
             return id;
         }
     }

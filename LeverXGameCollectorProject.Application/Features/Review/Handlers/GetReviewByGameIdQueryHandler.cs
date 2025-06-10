@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs.Review;
 using LeverXGameCollectorProject.Application.Features.Review.Queries;
 using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Review.Handlers
 {
-    public class GetReviewByGameIdQueryHandler : IRequestHandler<GetReviewByGameIdQuery, ReviewResponseModel>
+    public class GetReviewByGameIdQueryHandler : IRequestHandler<GetReviewByGameIdQuery, Models.Review>
     {
         private readonly IReviewService _service;
         private readonly IMapper _mapper;
@@ -17,10 +16,10 @@ namespace LeverXGameCollectorProject.Application.Features.Review.Handlers
             _mapper = mapper;
         }
 
-        public async Task<ReviewResponseModel> Handle(GetReviewByGameIdQuery request, CancellationToken ct)
+        public async Task<Models.Review> Handle(GetReviewByGameIdQuery query, CancellationToken ct)
         {
-            var review = await _service.GetReviewsByGameAsync(request.Id);
-            return _mapper.Map<ReviewResponseModel>(review);
+            var reviews = await _service.GetReviewsByGameAsync(query.Id);
+            return reviews.FirstOrDefault();
         }
     }
 }

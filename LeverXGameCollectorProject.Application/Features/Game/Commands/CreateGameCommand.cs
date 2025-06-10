@@ -3,7 +3,5 @@ using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Game.Commands
 {
-    public record CreateGameCommand(CreateGameRequestModel request) : IRequest<int>
-    {
-    }
+    public record CreateGameCommand(CreateGameRequestModel Request) : IRequest<int>;
 }
