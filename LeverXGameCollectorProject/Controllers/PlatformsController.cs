@@ -1,4 +1,5 @@
-﻿using LeverXGameCollectorProject.Application.DTOs.Platform;
+﻿using AutoMapper;
+using LeverXGameCollectorProject.Application.DTOs.Platform;
 using LeverXGameCollectorProject.Application.Features.Platform.Commands;
 using LeverXGameCollectorProject.Application.Features.Platform.Queries;
 using MediatR;
@@ -12,37 +13,38 @@ namespace LeverXGameCollectorProject.Controllers
     [Route("api/[controller]")]
     public class PlatformsController : ControllerBase
     {
-        //private readonly IPlatformService _plaformService;
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public PlatformsController(IMediator mediator)
+        public PlatformsController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
         }
-
-        // public PlatformsController(IPlatformService plaformService)
-        // {
-        //     _plaformService = plaformService;
-        // }
 
         /// <summary>  
         /// Retrieves all platforms.  
         /// </summary>  
-        [AllowAnonymous]
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType<IEnumerable<PlatformResponseModel>>(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllPlatformsQuery()));
+        public async Task<IActionResult> GetAll()
+        {
+            var platforms = await _mediator.Send(new GetAllPlatformsQuery());
+            return Ok(platforms.Select(_mapper.Map<PlatformResponseModel>));
+        }
 
         /// <summary>  
         /// Retrieves a specific platform by ID.  
         /// </summary>  
         /// <param name="id">The platform's unique ID.</param>  
-        [AllowAnonymous]
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType<PlatformResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {
             var platform = await _mediator.Send(new GetPlatformByIdQuery(id));
+            var model = _mapper.Map<PlatformResponseModel>(platform);
             return platform == null ? NotFound() : Ok(platform);
         }
 

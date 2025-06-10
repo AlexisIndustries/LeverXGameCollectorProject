@@ -3,7 +3,8 @@ using LeverXGameCollectorProject.Application.DTOs.Game;
 using LeverXGameCollectorProject.Application.Interfaces;
 using LeverXGameCollectorProject.Domain.Persistence.Entities;
 using LeverXGameCollectorProject.Application.Repositories.Interfaces;
-    
+using LeverXGameCollectorProject.Models;
+
 namespace LeverXGameCollectorProject.Application.Services
 {
     public class GameService : IGameService
@@ -17,16 +18,16 @@ namespace LeverXGameCollectorProject.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<GameResponseModel>> GetAllGamesAsync()
+        public async Task<IEnumerable<Game>> GetAllGamesAsync()
         {
             var games = await _gameRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<GameResponseModel>>(games);
+            return _mapper.Map<IEnumerable<Game>>(games);
         }
 
-        public async Task<GameResponseModel> GetGameByIdAsync(int id)
+        public async Task<Game> GetGameByIdAsync(int id)
         {
             var game = await _gameRepository.GetByIdAsync(id);
-            return _mapper.Map<GameResponseModel>(game);
+            return _mapper.Map<Game>(game);
         }
 
         public async Task<int> CreateGameAsync(CreateGameRequestModel gameDto)

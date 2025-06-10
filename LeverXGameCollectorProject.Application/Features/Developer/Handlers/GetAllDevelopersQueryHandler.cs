@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
-using LeverXGameCollectorProject.Application.DTOs.Developer;
 using LeverXGameCollectorProject.Application.Features.Developer.Queries;
 using LeverXGameCollectorProject.Application.Interfaces;
 using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Developer.Handlers
 {
-    public class GetAllDevelopersQueryHandler : IRequestHandler<GetAllDevelopersQuery, IEnumerable<DeveloperResponseModel>>
+    public class GetAllDevelopersQueryHandler : IRequestHandler<GetAllDevelopersQuery, IEnumerable<Models.Developer>>
     {
         private readonly IDeveloperService _service;
         private readonly IMapper _mapper;
@@ -17,10 +16,9 @@ namespace LeverXGameCollectorProject.Application.Features.Developer.Handlers
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<DeveloperResponseModel>> Handle(GetAllDevelopersQuery request, CancellationToken ct)
+        public async Task<IEnumerable<Models.Developer>> Handle(GetAllDevelopersQuery query, CancellationToken ct)
         {
-            var developers = await _service.GetAllDevelopersAsync();
-            return developers.Select(_mapper.Map<DeveloperResponseModel>);
+            return await _service.GetAllDevelopersAsync();
         }
     }
 }

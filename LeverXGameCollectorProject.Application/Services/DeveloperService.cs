@@ -3,6 +3,7 @@ using LeverXGameCollectorProject.Application.DTOs.Developer;
 using LeverXGameCollectorProject.Application.Interfaces;
 using LeverXGameCollectorProject.Domain.Persistence.Entities;
 using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+using LeverXGameCollectorProject.Models;
 
 namespace LeverXGameCollectorProject.Application.Services
 {
@@ -17,16 +18,16 @@ namespace LeverXGameCollectorProject.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<DeveloperResponseModel>> GetAllDevelopersAsync()
+        public async Task<IEnumerable<Developer>> GetAllDevelopersAsync()
         {
             var developers = await _developerRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<DeveloperResponseModel>>(developers);
+            return _mapper.Map<IEnumerable<Developer>>(developers);
         }
 
-        public async Task<DeveloperResponseModel> GetDeveloperByIdAsync(int id)
+        public async Task<Developer> GetDeveloperByIdAsync(int id)
         {
             var developer = await _developerRepository.GetByIdAsync(id);
-            return _mapper.Map<DeveloperResponseModel>(developer);
+            return _mapper.Map<Developer>(developer);
         }
 
         public async Task<int> CreateDeveloperAsync(CreateDeveloperRequestModel developerDto)

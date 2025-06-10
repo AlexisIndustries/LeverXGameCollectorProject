@@ -1,4 +1,5 @@
-﻿using LeverXGameCollectorProject.Application.DTOs.Genre;
+﻿using AutoMapper;
+using LeverXGameCollectorProject.Application.DTOs.Genre;
 using LeverXGameCollectorProject.Application.Features.Genre.Commands;
 using LeverXGameCollectorProject.Application.Features.Genre.Queries;
 using MediatR;
@@ -12,27 +13,26 @@ namespace LeverXGameCollectorProject.Controllers
     [Route("api/[controller]")]
     public class GenresController : ControllerBase
     {
-        //private readonly IGenreService _genreService;
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public GenresController(IMediator mediator)
+        public GenresController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
         }
-
-        //  public GenresController(IGenreService genreService)
-        //  {
-        //      _genreService = genreService;
-        //  }
 
         /// <summary>  
         /// Retrieves all genres.  
         /// </summary>  
-        [AllowAnonymous]
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType<IEnumerable<GenreResponseModel>>(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllGenresQuery()));
-
+        public async Task<IActionResult> GetAll()
+        {
+            var genres = await _mediator.Send(new GetAllGenresQuery());
+            return Ok(genres.Select(_mapper.Map<GenreResponseModel>));
+        }
         /// <summary>  
         /// Retrieves a specific genre by ID.  
         /// </summary>  
@@ -53,7 +53,7 @@ namespace LeverXGameCollectorProject.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateGenreRequestModel genre)
         {
-            var id =await _mediator.Send(new CreateGenreCommand(genre));
+            var id = await _mediator.Send(new CreateGenreCommand(genre));
             Dictionary<string, int> res = new()
             {
                 { "id", id }

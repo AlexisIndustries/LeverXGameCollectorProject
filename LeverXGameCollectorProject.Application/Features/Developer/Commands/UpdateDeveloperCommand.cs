@@ -3,7 +3,5 @@ using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Developer.Commands
 {
-    public record UpdateDeveloperCommand(int id, UpdateDeveloperRequestModel request) : IRequest<Unit>
-    {
-    }
+    public record UpdateDeveloperCommand(int Id, UpdateDeveloperRequestModel Request) : IRequest<Unit>;
 }

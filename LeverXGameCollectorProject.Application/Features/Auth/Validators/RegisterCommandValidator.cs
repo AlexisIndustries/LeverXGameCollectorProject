@@ -3,9 +3,9 @@ using LeverXGameCollectorProject.Application.DTOs.Auth;
 
 namespace LeverXGameCollectorProject.Application.Features.Auth.Validators
 {
-    public class RegisterCommandValidator : AbstractValidator<RegisterRequestModel>
+    public class RegisterRequestModelValidator : AbstractValidator<RegisterRequestModel>
     {
-        public RegisterCommandValidator()
+        public RegisterRequestModelValidator()
         {
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email is required")

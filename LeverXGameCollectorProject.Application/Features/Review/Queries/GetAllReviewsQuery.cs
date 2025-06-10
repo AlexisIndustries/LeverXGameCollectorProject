@@ -1,7 +1,6 @@
-﻿using LeverXGameCollectorProject.Application.DTOs.Review;
-using MediatR;
+﻿using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Review.Queries
 {
-    public record GetAllReviewQuery : IRequest<IEnumerable<ReviewResponseModel>>;
+    public record GetAllReviewQuery : IRequest<IEnumerable<Models.Review>>;
 }

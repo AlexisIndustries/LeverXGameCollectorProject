@@ -16,9 +16,9 @@ namespace LeverXGameCollectorProject.Application.Features.Genre.Handlers
             _mapper = mapper;
         }
 
-        public async Task<Unit> Handle(DeleteGenreCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DeleteGenreCommand command, CancellationToken cancellationToken)
         {
-            await _service.DeleteGenreAsync(request.Id);
+            await _service.DeleteGenreAsync(command.Id);
             return Unit.Value;
         }
     }

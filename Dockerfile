@@ -8,7 +8,6 @@ RUN dotnet publish "LeverXGameCollectorProject/LeverXGameCollectorProject.API.cs
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
-EXPOSE 5050
-EXPOSE 5051
+EXPOSE 8080
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "LeverXGameCollectorProject.API.dll"]

@@ -1,4 +1,5 @@
-﻿using LeverXGameCollectorProject.Application.DTOs.Game;
+﻿using AutoMapper;
+using LeverXGameCollectorProject.Application.DTOs.Game;
 using LeverXGameCollectorProject.Application.Features.Game.Commands;
 using LeverXGameCollectorProject.Application.Features.Game.Queries;
 using MediatR;
@@ -12,38 +13,38 @@ namespace LeverXGameCollectorProject.Controllers
     [Authorize(Roles = "Admin")]
     public class GamesController : ControllerBase
     {
-        //private readonly IGameService _gameService;
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public GamesController(IMediator mediator)
+        public GamesController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
         }
-
-        // public GamesController(IGameService gameService)
-        // {
-        //     _gameService = gameService;
-        // }
 
         /// <summary>  
         /// Retrieves all games.  
         /// </summary> 
-        [AllowAnonymous]
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType<IEnumerable<GameResponseModel>>(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllGamesQuery()));
-
+        public async Task<IActionResult> GetAll()
+        {
+            var games = await _mediator.Send(new GetAllGamesQuery());
+            return Ok(games.Select(_mapper.Map<GameResponseModel>));
+        }
         /// <summary>  
         /// Retrieves a specific game by ID.  
         /// </summary>  
         /// <param name="id">The game's unique ID.</param> 
-        [AllowAnonymous]
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType<GameResponseModel>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {
             var game = await _mediator.Send(new GetGameByIdQuery(id));
-            return game == null ? NotFound() : Ok(game);
+            var model = _mapper.Map<GameResponseModel>(game);
+            return model == null ? NotFound() : Ok(model);
         }
 
         /// <summary>  

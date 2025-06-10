@@ -16,9 +16,9 @@ namespace LeverXGameCollectorProject.Application.Features.Game.Handlers
             _mapper = mapper;
         }
 
-        public async Task<Unit> Handle(DeleteGameCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DeleteGameCommand command, CancellationToken cancellationToken)
         {
-            await _service.DeleteGameAsync(request.Id);
+            await _service.DeleteGameAsync(command.Id);
             return Unit.Value;
         }
     }

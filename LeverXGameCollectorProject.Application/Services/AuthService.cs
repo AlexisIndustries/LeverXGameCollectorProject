@@ -4,6 +4,7 @@ using LeverXGameCollectorProject.Domain.Entities.DB;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -29,7 +30,7 @@ namespace LeverXGameCollectorProject.Application.Services
             _roleManager = roleManager;
         }
 
-        public async Task<AuthResponceModel> RegisterAsync(RegisterRequestModel request)
+        public async Task<AuthResponseModel> RegisterAsync(RegisterRequestModel request)
         {
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
             if (existingUser != null)
@@ -55,14 +56,14 @@ namespace LeverXGameCollectorProject.Application.Services
 
             await _userManager.AddToRoleAsync(user, "User");
 
-            return new AuthResponceModel
+            return new AuthResponseModel
             {
                 UserId = user.Id,
                 Token = await GenerateJwtToken(user)
             };
         }
 
-        public async Task<AuthResponceModel> LoginAsync(LoginRequestModel request)
+        public async Task<AuthResponseModel> LoginAsync(LoginRequestModel request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
@@ -76,7 +77,7 @@ namespace LeverXGameCollectorProject.Application.Services
                 throw new ApplicationException("Invalid credentials");
             }
 
-            return new AuthResponceModel
+            return new AuthResponseModel
             {
                 UserId = user.Id,
                 Token = await GenerateJwtToken(user)
@@ -120,7 +121,7 @@ namespace LeverXGameCollectorProject.Application.Services
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryinMinutes);
+            var expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryInMinutes);
 
             var token = new JwtSecurityToken(
                 issuer: _jwtSettings.ValidIssuer,
@@ -133,13 +134,58 @@ namespace LeverXGameCollectorProject.Application.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task<AuthResponceModel> GenerateAuthResponse(UserEntity user)
+        public async Task<AuthResponseModel> GenerateAuthResponse(UserEntity user)
         {
-            return new AuthResponceModel
+            return new AuthResponseModel
             {
                 UserId = user.Id,
                 Token = await GenerateJwtToken(user)
             };
+        }
+
+        public async Task<UserEntity?> Login(LoginRequestModel login)
+        {
+            var user = await _userManager.FindByEmailAsync(login.Email);
+            if (user == null)
+            {
+                throw new ApplicationException("Invalid credentials");
+            }
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, login.Password, false);
+            if (!result.Succeeded)
+            {
+                throw new ApplicationException("Invalid credentials");
+            }
+
+            return user;
+        }
+
+        public async Task<UserEntity> Register(RegisterRequestModel register)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(register.Email);
+            if (existingUser != null)
+            {
+                throw new ApplicationException("Email already registered");
+            }
+
+            var user = new UserEntity
+            {
+                FirstName = register.FirstName,
+                LastName = register.LastName,
+                Email = register.Email,
+                UserName = register.Email,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var result = await _userManager.CreateAsync(user, register.Password);
+
+            if (!result.Succeeded)
+            {
+                throw new ValidationException();
+            }
+
+            await _userManager.AddToRoleAsync(user, "User");
+            return user;
         }
     }
 }

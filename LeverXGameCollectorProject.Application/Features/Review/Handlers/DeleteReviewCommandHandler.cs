@@ -16,9 +16,9 @@ namespace LeverXGameCollectorProject.Application.Features.Review.Handlers
             _mapper = mapper;
         }
 
-        public async Task<Unit> Handle(DeleteReviewCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DeleteReviewCommand command, CancellationToken cancellationToken)
         {
-            await _service.DeleteReviewAsync(request.Id);
+            await _service.DeleteReviewAsync(command.Id);
             return Unit.Value;
         }
     }

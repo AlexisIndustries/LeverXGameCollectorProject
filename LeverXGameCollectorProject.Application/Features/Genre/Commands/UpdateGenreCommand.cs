@@ -3,7 +3,5 @@ using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Genre.Commands
 {
-    public record UpdateGenreCommand(int id, UpdateGenreRequestModel request) : IRequest<Unit>
-    {
-    }
+    public record UpdateGenreCommand(int Id, UpdateGenreRequestModel Request) : IRequest<Unit>;
 }

@@ -3,6 +3,7 @@ using LeverXGameCollectorProject.Application.DTOs.Platform;
 using LeverXGameCollectorProject.Application.Interfaces;
 using LeverXGameCollectorProject.Domain.Persistence.Entities;
 using LeverXGameCollectorProject.Application.Repositories.Interfaces;
+using LeverXGameCollectorProject.Models;
 
 namespace LeverXGameCollectorProject.Application.Services
 {
@@ -17,16 +18,16 @@ namespace LeverXGameCollectorProject.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<PlatformResponseModel>> GetAllPlatformsAsync()
+        public async Task<IEnumerable<Platform>> GetAllPlatformsAsync()
         {
             var platforms = await _platformRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<PlatformResponseModel>>(platforms);
+            return _mapper.Map<IEnumerable<Platform>>(platforms);
         }
 
-        public async Task<PlatformResponseModel> GetPlatformByIdAsync(int id)
+        public async Task<Platform> GetPlatformByIdAsync(int id)
         {
             var platform = await _platformRepository.GetByIdAsync(id);
-            return _mapper.Map<PlatformResponseModel>(platform);
+            return _mapper.Map<Platform>(platform);
         }
 
         public async Task<int> CreatePlatformAsync(CreatePlatformRequestModel platformDto)

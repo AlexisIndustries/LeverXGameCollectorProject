@@ -3,9 +3,9 @@ using LeverXGameCollectorProject.Application.DTOs.Genre;
 
 namespace LeverXGameCollectorProject.Application.Features.Genre.Validators
 {
-    public class GenreValidator : AbstractValidator<CreateGenreRequestModel>
+    public class GenreRequestModelValidator : AbstractValidator<CreateGenreRequestModel>
     {
-        public GenreValidator()
+        public GenreRequestModelValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Genre name is required")

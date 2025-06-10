@@ -1,7 +1,6 @@
-﻿using LeverXGameCollectorProject.Application.DTOs.Game;
-using MediatR;
+﻿using MediatR;
 
 namespace LeverXGameCollectorProject.Application.Features.Game.Queries
 {
-    public record GetGameByIdQuery(int Id) : IRequest<GameResponseModel>;
+    public record GetGameByIdQuery(int Id) : IRequest<Models.Game>;
 }

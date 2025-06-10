@@ -23,6 +23,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решен
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeverXGameCollectorProject.Tests.Unit", "LeverXGameCollectorProject.Tests.Unit\LeverXGameCollectorProject.Tests.Unit.csproj", "{C7AF78D1-C550-42F4-8033-6270235EBFA7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{90CDB6CB-D03A-4F42-9E6F-8C9267CA1DC2}"
+	ProjectSection(SolutionItems) = preProject
+		initdb.sql = initdb.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
