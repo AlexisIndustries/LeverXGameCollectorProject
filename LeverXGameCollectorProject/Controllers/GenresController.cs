@@ -1,4 +1,8 @@
-﻿using LeverXGameCollectorProject.Models;
+﻿using LeverXGameCollectorProject.Application.DTOs.Game;
+using LeverXGameCollectorProject.Application.DTOs.Genre;
+using LeverXGameCollectorProject.Application.Features.Genre.Commands;
+using LeverXGameCollectorProject.Application.Features.Genre.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeverXGameCollectorProject.Controllers
@@ -7,38 +11,35 @@ namespace LeverXGameCollectorProject.Controllers
     [Route("api/[controller]")]
     public class GenresController : ControllerBase
     {
-        private static List<Genre> _genres = new() 
+        //private readonly IGenreService _genreService;
+        private readonly IMediator _mediator;
+
+        public GenresController(IMediator mediator)
         {
-            new Genre
-            {
-                Id = 1,
-                Name = "RPG",
-                Description = "Role-playing games",
-                Popularity = "High"
-            },
-            new Genre
-            {
-                Id = 2,
-                Name = "Action",
-                Description = "Fast-paced games",
-                Popularity = "Very High"
-            }
-        };
+            _mediator = mediator;
+        }
+
+        //  public GenresController(IGenreService genreService)
+        //  {
+        //      _genreService = genreService;
+        //  }
 
         /// <summary>  
         /// Retrieves all genres.  
         /// </summary>  
         [HttpGet]
-        public IActionResult GetAll() => Ok(_genres);
+        [ProducesResponseType<IEnumerable<GenreResponseModel>>(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllGenresQuery()));
 
         /// <summary>  
         /// Retrieves a specific genre by ID.  
         /// </summary>  
         /// <param name="id">The genre's unique ID.</param>  
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        [ProducesResponseType<GenreResponseModel>(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetById(int id)
         {
-            var genre = _genres.FirstOrDefault(g => g.Id == id);
+            var genre = await _mediator.Send(new GetGenreByIdQuery(id));
             return genre == null ? NotFound() : Ok(genre);
         }
 
@@ -47,11 +48,14 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="genre">The genre data in JSON format.</param>  
         [HttpPost]
-        public IActionResult Create([FromBody] Genre genre)
+        public async Task<IActionResult> Create([FromBody] CreateGenreRequestModel genre)
         {
-            genre.Id = _genres.Count + 1;
-            _genres.Add(genre);
-            return CreatedAtAction(nameof(GetById), new { id = genre.Id }, genre);
+            var id =await _mediator.Send(new CreateGenreCommand(genre));
+            Dictionary<string, int> res = new()
+            {
+                { "id", id }
+            };
+            return StatusCode(StatusCodes.Status201Created, res);
         }
 
         /// <summary>  
@@ -60,14 +64,9 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The genre's unique ID.</param>  
         /// <param name="updatedGenre">Updated genre data in JSON format.</param>  
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Genre updatedGenre)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateGenreRequestModel updatedGenre)
         {
-            var genre = _genres.FirstOrDefault(g => g.Id == id);
-            if (genre == null) return NotFound();
-
-            genre.Name = updatedGenre.Name;
-            genre.Description = updatedGenre.Description;
-            genre.Popularity = updatedGenre.Popularity;
+            await _mediator.Send(new UpdateGenreCommand(id, updatedGenre));
             return NoContent();
         }
 
@@ -76,12 +75,12 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="id">The genre's unique ID.</param>  
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var genre = _genres.FirstOrDefault(g => g.Id == id);
+            var genre = _mediator.Send(new GetGenreByIdQuery(id));
             if (genre == null) return NotFound();
 
-            _genres.Remove(genre);
+            await _mediator.Send(new DeleteGenreCommand(id));
             return NoContent();
         }
     }

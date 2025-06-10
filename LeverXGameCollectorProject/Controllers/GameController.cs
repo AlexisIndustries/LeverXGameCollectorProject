@@ -1,6 +1,8 @@
-﻿using LeverXGameCollectorProject.Models;
+﻿using LeverXGameCollectorProject.Application.DTOs.Game;
+using LeverXGameCollectorProject.Application.Features.Game.Commands;
+using LeverXGameCollectorProject.Application.Features.Game.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-
 
 namespace LeverXGameCollectorProject.Controllers
 {
@@ -8,42 +10,35 @@ namespace LeverXGameCollectorProject.Controllers
     [Route("api/[controller]")]
     public class GamesController : ControllerBase
     {
-        private static List<Game> _games = new()
+        //private readonly IGameService _gameService;
+        private readonly IMediator _mediator;
+
+        public GamesController(IMediator mediator)
         {
-            new Game
-            {
-                Id = 1,
-                Title = "The Witcher 3",
-                ReleaseDate = new DateTime(2015, 5, 19),
-                Description = "Action RPG game",
-                PlatformId = 1,
-                GenreId = 1
-            },
-            new Game
-            {
-                Id = 2,
-                Title = "Super Mario Odyssey",
-                ReleaseDate = new DateTime(2017, 10, 27),
-                Description = "Platformer game",
-                PlatformId = 2,
-                GenreId = 2
-            }
-        };
+            _mediator = mediator;
+        }
+
+        // public GamesController(IGameService gameService)
+        // {
+        //     _gameService = gameService;
+        // }
 
         /// <summary>  
         /// Retrieves all games.  
         /// </summary> 
         [HttpGet]
-        public IActionResult GetAll() => Ok(_games);
+        [ProducesResponseType<IEnumerable<GameResponseModel>>(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetAllGamesQuery()));
 
         /// <summary>  
         /// Retrieves a specific game by ID.  
         /// </summary>  
         /// <param name="id">The game's unique ID.</param> 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        [ProducesResponseType<GameResponseModel>(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetById(int id)
         {
-            var game = _games.FirstOrDefault(g => g.Id == id);
+            var game = await _mediator.Send(new GetGameByIdQuery(id));
             return game == null ? NotFound() : Ok(game);
         }
 
@@ -52,11 +47,14 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="game">The game data in JSON format.</param> 
         [HttpPost]
-        public IActionResult Create([FromBody] Game game)
+        public async Task<IActionResult> Create([FromBody] CreateGameRequestModel game)
         {
-            game.Id = _games.Count + 1;
-            _games.Add(game);
-            return CreatedAtAction(nameof(GetById), new { id = game.Id }, game);
+            var id = await _mediator.Send(new CreateGameCommand(game));
+            Dictionary<string, int> res = new()
+            {
+                { "id", id }
+            };
+            return StatusCode(StatusCodes.Status201Created, res);
         }
 
         /// <summary>  
@@ -65,16 +63,9 @@ namespace LeverXGameCollectorProject.Controllers
         /// <param name="id">The game's unique ID.</param>  
         /// <param name="updatedGame">Updated game data in JSON format.</param> 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Game updatedGame)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateGameRequestModel updatedGame)
         {
-            var game = _games.FirstOrDefault(g => g.Id == id);
-            if (game == null) return NotFound();
-
-            game.Title = updatedGame.Title;
-            game.Description = updatedGame.Description;
-            game.PlatformId = updatedGame.PlatformId;
-            game.ReleaseDate = updatedGame.ReleaseDate;
-            game.GenreId = updatedGame.GenreId;
+            await _mediator.Send(new UpdateGameCommand(id, updatedGame));
             return NoContent();
         }
 
@@ -83,12 +74,12 @@ namespace LeverXGameCollectorProject.Controllers
         /// </summary>  
         /// <param name="id">The game's unique ID.</param> 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var game = _games.FirstOrDefault(g => g.Id == id);
+            var game = _mediator.Send(new GetGameByIdQuery(id));
             if (game == null) return NotFound();
 
-            _games.Remove(game);
+            await _mediator.Send(new DeleteGameCommand(id));
             return NoContent();
         }
     }

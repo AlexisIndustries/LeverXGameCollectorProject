@@ -1,9 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeverXGameCollectorProject", "LeverXGameCollectorProject\LeverXGameCollectorProject.csproj", "{CA46DB77-25AD-4CA6-8DED-456E975B276C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeverXGameCollectorProject.API", "LeverXGameCollectorProject\LeverXGameCollectorProject.API.csproj", "{CA46DB77-25AD-4CA6-8DED-456E975B276C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeverXGameCollectorProject.Application", "LeverXGameCollectorProject.Application\LeverXGameCollectorProject.Application.csproj", "{383FF9FC-5B6B-4DDB-8202-1167CAF951E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeverXGameCollectorProject.Domain", "LeverXGameCollectorProject.Domain\LeverXGameCollectorProject.Domain.csproj", "{71800A91-2BCD-475F-AEC7-AC6583F32804}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeverXGameCollectorProject.Tests.Architecture", "LeverXGameCollectorProject.Tests.Architecture\LeverXGameCollectorProject.Tests.Architecture.csproj", "{9E237BEE-CF29-469E-ADE7-3FEA6B5FDBC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeverXGameCollectorProject.Infrastructure", "LeverXGameCollectorProject.Infrastructure\LeverXGameCollectorProject.Infrastructure.csproj", "{A4DE2E6C-7484-4BAE-BF65-682461F10CD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeverXGameCollectorProject.Migrations", "LeverXGameCollectorProject.Migrations\LeverXGameCollectorProject.Migrations.csproj", "{EF0A9F46-BD6A-4694-889F-93E1CC7CBEF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +25,26 @@ Global
 		{CA46DB77-25AD-4CA6-8DED-456E975B276C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA46DB77-25AD-4CA6-8DED-456E975B276C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA46DB77-25AD-4CA6-8DED-456E975B276C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{383FF9FC-5B6B-4DDB-8202-1167CAF951E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{383FF9FC-5B6B-4DDB-8202-1167CAF951E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{383FF9FC-5B6B-4DDB-8202-1167CAF951E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{383FF9FC-5B6B-4DDB-8202-1167CAF951E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71800A91-2BCD-475F-AEC7-AC6583F32804}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71800A91-2BCD-475F-AEC7-AC6583F32804}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71800A91-2BCD-475F-AEC7-AC6583F32804}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71800A91-2BCD-475F-AEC7-AC6583F32804}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E237BEE-CF29-469E-ADE7-3FEA6B5FDBC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E237BEE-CF29-469E-ADE7-3FEA6B5FDBC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E237BEE-CF29-469E-ADE7-3FEA6B5FDBC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E237BEE-CF29-469E-ADE7-3FEA6B5FDBC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4DE2E6C-7484-4BAE-BF65-682461F10CD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4DE2E6C-7484-4BAE-BF65-682461F10CD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4DE2E6C-7484-4BAE-BF65-682461F10CD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4DE2E6C-7484-4BAE-BF65-682461F10CD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF0A9F46-BD6A-4694-889F-93E1CC7CBEF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF0A9F46-BD6A-4694-889F-93E1CC7CBEF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF0A9F46-BD6A-4694-889F-93E1CC7CBEF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF0A9F46-BD6A-4694-889F-93E1CC7CBEF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
